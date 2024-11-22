@@ -177,18 +177,19 @@ def play_n_games(policy1, policy2, n_games=1000):
             ties +=1
     win2 = n_games-ties-win1
     end_time = time.time()
- 
-    myTable = PrettyTable(["Player", "Policy", "Win rate"]) 
-    myTable.add_row(["P1", policy1, win1/n_games]) 
-    myTable.add_row(["P2", policy2, win2/n_games]) 
-    myTable.add_row(["Tie", "", ties/n_games])
-    print(f"Played {n_games} games in {end_time-start_time:.3f} s")
-    print(myTable)
+    win1/=n_games
+    win2/=n_games
+    ties/=n_games
+    return f"{(win1*100):.2f}% | {(ties*100):.2f}% | {(win2*100):.2f}%"
 
 
-# now try 1000 games for each combination of policies
 policies = ['asc', 'desc', 'rand']
+myTable = PrettyTable(["P1\\P2"] + policies) 
+# now try 1000 games for each combination of policies
 for p1 in policies:
+    row = [p1]
     for p2 in policies:
-        play_n_games(p1, p2)
+        row += [play_n_games(p1, p2, n_games=1000)]
+    myTable.add_row(row)
 
+print(myTable)
