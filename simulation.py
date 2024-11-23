@@ -44,13 +44,19 @@ def best_score(gb, result_index):
     # this nested loop chooses the couples of operands
     # the order does not matter since is_valid_operation deals with it
     for i in range(4):
-        if i == result_index:
-            continue
-        if gb[i] == 0: # invalid value, skip
+        # if you uncomment the following if clause, you remove the possibility to form 
+        # operations with the card that the player has just placed
+        # if i == result_index:
+        #     continue
+        
+        # no card placed in position i
+        if gb[i] == 0: 
             continue
         for j in range(i+1, 4):
-            if gb[j] == 0: # invalid value, skip
+            # no card placed in position j
+            if gb[j] == 0:
                 continue
+            
             if not is_valid_operation(result=gb[result_index], operand1=gb[i], operand2=gb[j]):
                 continue
             
@@ -131,8 +137,12 @@ def play_one_game(policy1, policy2):
 def play_n_games(policy1, policy2, n_games=1000):
     win1 = 0
     ties = 0
+    tot_score1 = 0
+    tot_score2 = 0
     for i in range(n_games):
         score1, score2 = play_one_game(policy1, policy2)
+        tot_score1 += score1
+        tot_score2 += score2
         if score1 > score2:
             win1 += 1
         if score1 == score2:
@@ -141,7 +151,9 @@ def play_n_games(policy1, policy2, n_games=1000):
     win1/=n_games
     win2/=n_games
     ties/=n_games
-    return f"{(win1*100):.2f}% | {(ties*100):.2f}% | {(win2*100):.2f}%"
+    avg_score_1 = tot_score1/n_games
+    avg_score_2 = tot_score2/n_games
+    return f"{(win1*100):.2f}% ({avg_score_1:.2f}) | {(ties*100):.2f}% | {(win2*100):.2f}% ({avg_score_2:.2f})"
 
 
 policies = ['asc', 'desc', 'rand']
@@ -150,8 +162,8 @@ myTable = PrettyTable(["P1\\P2"] + policies)
 for p1 in policies:
     row = [p1]
     for p2 in policies:
-        row += [play_n_games(p1, p2, n_games=1000000)]
+        row += [play_n_games(p1, p2, n_games=100000)]
     myTable.add_row(row)
 
-print("For each cell, win rate p1 | tie rate | win rate p2")
+print("For each cell, win rate p1 (average score p1) | tie rate | win rate p2 (average score p2)")
 print(myTable)

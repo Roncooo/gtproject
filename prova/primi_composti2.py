@@ -163,8 +163,8 @@ if __name__ == "__main__":
    # Stato iniziale del gioco
     positions = [0, 0]  # Entrambi i giocatori iniziano dalla posizione 0
 
-    max_card = 12
-    num_card = 24
+    num_card = 10 # con 10 termina in pochi secondi, dovrebbe essere 24
+    max_card = num_card+1
     cards_per_player = int(num_card / 2)
 
     # Generazione del mazzo e distribuzione delle carte
