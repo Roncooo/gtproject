@@ -46,7 +46,11 @@ def best_score(gb, result_index):
     for i in range(4):
         if i == result_index:
             continue
+        if gb[i] == 0: # invalid value, skip
+            continue
         for j in range(i+1, 4):
+            if gb[j] == 0: # invalid value, skip
+                continue
             if not is_valid_operation(result=gb[result_index], operand1=gb[i], operand2=gb[j]):
                 continue
             
@@ -146,7 +150,7 @@ myTable = PrettyTable(["P1\\P2"] + policies)
 for p1 in policies:
     row = [p1]
     for p2 in policies:
-        row += [play_n_games(p1, p2, n_games=100000)]
+        row += [play_n_games(p1, p2, n_games=1000000)]
     myTable.add_row(row)
 
 print("For each cell, win rate p1 | tie rate | win rate p2")
