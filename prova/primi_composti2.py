@@ -1,5 +1,4 @@
 import itertools
-from graphviz import Digraph
 import numpy as np
 import sympy as sp
 import random
