@@ -27,3 +27,19 @@ The code is written in python. To run it, make sure to have all the dependencies
 2. run ```conda env create --file=environments.yml``` to create the conda environment
 3. run ```conda activate gt_project_env``` to activate the environment
 
+
+
+## Idee
+
+* Generare l'albero e fare backward induction
+    * Pro: troverei il NE
+    * Contro: troppo grande l'albero
+        * si può pensare ad un 'pruning' cioè non generare alcuni nodi se so già che non andranno a buon fine ma sembra non bastare (ad esempio se arrivo ad un punto dove la differenza di punteggio è maggiore del massimo di punti che può fare da quel momento in avanti un determinato player, allora so già chi vincerà e posso non espandere tutto)
+
+* Rinunciare ad espandere tutto l'albero ma usare una qualche euristica per espandere pochi nodi ad ogni livello, ad esempio se il massimo punteggio che posso fare in quel turno è p, espando tutti i nodi che rappresentano le possibili giocate di carte che mi darebbero quel punteggio p (in generale saranno poche per turno). Non sono sicuro che abbia senso questa cosa perché non credo si arrivi ad avere un NE e non abbiamo nemmeno garanzia sull'ottimalità della partita. 
+
+* Vedere se per case la soluzione greedy è un NE (secondo me in generale no).
+
+* Fare un simulatore di una sola partita con delle carte da test
+
+* Generare d livelli, risolvere con minmax e alfa beta pruning, riprendere il nodo finale e ricominciare. In questo modo non troviamo il NE (a meno che d=24, ma noi usiamo d piccolo) però è il modo che si usa per gli alberi enormi (scacchi).

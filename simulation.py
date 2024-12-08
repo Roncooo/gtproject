@@ -1,5 +1,4 @@
 import numpy as np
-import sympy as sp
 import random
 import time
 from prettytable import PrettyTable 
@@ -15,6 +14,10 @@ predetermined_policies = ('asc', 'desc', 'rand')
 # each choice may change on the base of what's on the table
 dynamic_policies = ('greedy_desc', 'greedy_asc')
 all_policies = predetermined_policies + dynamic_policies
+
+IS_PRIME = (True,True,False,True,False,True,False,False,False,True,False,True,False,False,False,True,False,True,False,False,False,True,False,False)
+def is_prime(number):
+    return IS_PRIME[number-2]
 
 def is_prime_index(index):
     '''Tells if at position index there are prime cards (True) or composites (False)'''
@@ -42,7 +45,7 @@ def card_score_by_index(card_index):
     return prime_score if is_prime_index(card_index) else composite_score
 
 def card_score(card):
-    return prime_score if sp.isprime(card) else composite_score
+    return prime_score if is_prime(card) else composite_score
 
 def best_score(visible_cards, result_card):    
     '''
@@ -59,7 +62,7 @@ def best_score(visible_cards, result_card):
     for i in range(4):
         # if you uncomment the following if clause, you remove the possibility to form operations with 
         # the card that the player has just placed. In other words, by commenting the if we allow a#x=x
-        if i == result_card:
+        if visible_cards[i] == result_card:
             continue
         
         if visible_cards[i] == 0: # no card placed in position i
@@ -86,7 +89,7 @@ def best_score(visible_cards, result_card):
 
 def place_card_index(card, player_number):
     ''' Tells on which index to place a card '''
-    return (player_number-1)*2+(0 if sp.isprime(card) else 1)
+    return (player_number-1)*2+(0 if is_prime(card) else 1)
 
 def sort_deck_according_to_policy(policy, player_deck):
     ''' Returns the array of cards sorted according to a policy '''
