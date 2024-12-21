@@ -81,11 +81,11 @@ def genera_albero(positions, cards_player1, cards_player2, visible_cards, curren
             # Viene calcolata la posizione del giocatore corrente aggiungendo il numero di passi da fare per la carta giocata.
             new_positions[node.current_player] += step
 
-            # Aggiorna lo stato del nuovo nodo
+            # Aggiorna la mano di gioco del figlio che non avrà la carta giocata
             new_cards_p1 = node.cards_player1 - {card} if node.current_player == 0 else node.cards_player1
             new_cards_p2 = node.cards_player2 - {card} if node.current_player == 1 else node.cards_player2
 
-            # Aggiorna visible_cards in base al tipo di carta e al giocatore corrente
+            # Aggiorna visible_cards in base al tipo di carta giocata e al giocatore corrente
             new_visible_cards = list(node.visible_cards)  # Copia delle carte visibili
             if node.current_player == 0:  # Giocatore 1
                 if card in PRIMI:
