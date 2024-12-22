@@ -138,7 +138,7 @@ def play_one_game(policy1, policy2):
     random.shuffle(deck)
 
     player1 = deck[:cards_per_player]
-    player2 = deck[ cards_per_player:]
+    player2 = deck[cards_per_player:]
     
     # player1 is the first to play: according to the rules, he must have 2 in his deck
     # if this is not the case i switch the decks
@@ -164,7 +164,7 @@ def play_one_game(policy1, policy2):
         card_index = place_card_index(card1, player_number=1)
         gb[card_index] = card1
         score1 += best_score(visible_cards=gb, result_card=card1)
-        moves.append((1, card1, gb.copy(), score1, score2))
+        moves.append((1, card1, gb.copy(), score1, score2, player1, player2))
 
 
         player2 = choose_card(player2, policy2, i, gb)
@@ -172,12 +172,12 @@ def play_one_game(policy1, policy2):
         card_index = place_card_index(card2, player_number=2)
         gb[card_index] = card2
         score2 += best_score(visible_cards=gb, result_card=card2)
-        moves.append((2, card2, gb.copy(), score1, score2))
+        moves.append((2, card2, gb.copy(), score1, score2, player1, player2))
 
     print(f"\nPartita: {policy1} VS {policy2}")
     for move in moves:
-        player, card, table, score1, score2 = move
-        print(f"Giocatore {player} ha giocato la carta {card} Stato del tavolo: {table}. Punteggio - Giocatore 1: {score1}, Giocatore 2: {score2}")
+        player, card, table, score1, score2, hand1, hand2 = move
+        print(f"Giocatore {player} ha giocato la carta {card} Stato del tavolo: {table}. Punteggio - Giocatore 1: {score1}, Giocatore 2: {score2}, Carte Giocatore 1: {hand1}, Carte Giocatore 2: {hand2}")
     return score1, score2
 
 

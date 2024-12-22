@@ -1,6 +1,8 @@
 import random
 import time
 
+import numpy as np
+
 # Costanti
 PRIMI = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73}
 COMPOSTI = set(range(2, 74)) - PRIMI
@@ -218,11 +220,14 @@ def generate_tree(cards_p1, cards_p2, table_cards, depth):
 
 def match(seed_value, depths):
 
-    deck = [i for i in range(2, 25)]
-    random.seed(seed_value)  # Imposta il seed
+    deck = np.linspace(start=2, stop=25, num=24, dtype='int')
+    random.seed(seed_value)
     random.shuffle(deck)
     cards_p1 = set(deck[:12])
     cards_p2 = set(deck[12:])
+
+    if 2 not in cards_p1:
+        cards_p1, cards_p2 = cards_p2, cards_p1
 
     # Stato iniziale
     current_node = Node(cards_p1, cards_p2, [0, 0, 0, 0])
