@@ -61,7 +61,7 @@ def best_score(visible_cards, result_card):
     # the order does not matter since is_valid_operation deals with it
     for i in range(4):
         # if you uncomment the following if clause, you remove the possibility to form operations with 
-        # the card that the player has just placed. In other words, by commenting the if we allow a#x=x
+        # the card that the player has just placed. In other words, by commenting the if we allow x#a=x
         if visible_cards[i] == result_card:
             continue
         
@@ -69,6 +69,10 @@ def best_score(visible_cards, result_card):
             continue
         for j in range(i+1, 4):
             if visible_cards[j] == 0: # no card placed in position j
+                continue
+                        
+            # as before, we do not allow a#x=x
+            if visible_cards[j] == result_card:
                 continue
             
             if not is_valid_operation(result=result_card, operand1=visible_cards[i], operand2=visible_cards[j]):
