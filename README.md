@@ -15,9 +15,13 @@ In other words, the operation (if it exists) must involve 3 different cards (A#B
 
 So for example if the gameboard is [2,-,3,-] and player A has the card 5 then by playing it he gets 6 points and then the gameboard will be [5,-,3-,-]. We do not allow for a#x=x since the operation does not involve 3 different cards so in the case [9,-,-,-], player B can play 3 but he only gets 2 points (and not 5).
 
-For our analysis it's useful to visualize: 
-all the cards (24): [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]
-primes (9):         [2,3,5,7,11,13,17,19,23]
+Things we have deduced from the rules even though they are not 100% clear:
+* "risultato di un’operazione aritmetica (+, -, x, /) tra __altre__ due CARD...": this implies that we cannot have a#x=x: all operations must involve 3 different cards (two operands and one result)
+* the rules allow the case P=P#P: this implies that chosen a card to play: you first evaluate the score and then place it on the gameboard, so the operands can be chosen among the 4 visible cards before placing the new one
+
+For our analysis it's useful to visualize: \
+all the cards (24): [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25]\
+primes (9):         [2,3,5,7,11,13,17,19,23]\
 composites (15):    [4,6,8,9,10,12,14,15,16,18,20,21,22,24,25]
 
 
@@ -43,3 +47,8 @@ The code is written in python. To run it, make sure to have all the dependencies
 * Fare un simulatore di una sola partita con delle carte da test
 
 * Generare d livelli, risolvere con minmax e alfa beta pruning, riprendere il nodo finale e ricominciare. In questo modo non troviamo il NE (a meno che d=24, ma noi usiamo d piccolo) però è il modo che si usa per gli alberi enormi (scacchi).
+
+# TODO
+
+* greedy random policy on the simulation (and then run the cross policy simulation for a bit)
+

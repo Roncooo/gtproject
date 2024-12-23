@@ -134,6 +134,7 @@ def play_one_game(policy1, policy2):
     # assert(policy2 in predetermined_policies or policy2 in dynamic_policies)
     
     deck = np.linspace(start=2, stop=max_card, num=num_card, dtype='int')
+    # disable the fixed seed to evaluate n games
     random.seed(31)
     random.shuffle(deck)
 
@@ -162,16 +163,15 @@ def play_one_game(policy1, policy2):
         player1 = choose_card(player1, policy1, i, gb)
         card1 = player1[i]
         card_index = place_card_index(card1, player_number=1)
-        gb[card_index] = card1
         score1 += best_score(visible_cards=gb, result_card=card1)
+        gb[card_index] = card1
         moves.append((1, card1, gb.copy(), score1, score2, player1, player2))
-
 
         player2 = choose_card(player2, policy2, i, gb)
         card2 = player2[i]
         card_index = place_card_index(card2, player_number=2)
-        gb[card_index] = card2
         score2 += best_score(visible_cards=gb, result_card=card2)
+        gb[card_index] = card2
         moves.append((2, card2, gb.copy(), score1, score2, player1, player2))
 
     print(f"\nPartita: {policy1} VS {policy2}")
@@ -233,7 +233,7 @@ def print_results(results, policies, show_scores=False):
 
 
 if __name__ == "__main__":
-    n_games = 1
+    n_games = 1 # remember to disable the fixed seed to evaluate n_games>1, also disable all the prints in play_one_game to speed up the process (a lot)
     policies = all_policies
     start = time.time()
     results = play_n_games_for_each_policy_combination(n_games = n_games, policies=policies)
