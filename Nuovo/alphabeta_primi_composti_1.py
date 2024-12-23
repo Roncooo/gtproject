@@ -260,5 +260,5 @@ if __name__ == "__main__":
     for i, path in enumerate(all_paths):
         print(f"Path {i+1}:")
         for node in path:
-            print(f"Player {node.current_player}, Player 1 Cards{node.cards_player1}, Player 2 Cards {node.cards_player2}, cards Delta Score: {float(node.delta_score)}, Visible Cards: {node.visible_cards}")
+            print(f"Giocatore {node.current_player} ha giocato la carta {node.card_just_played} Stato del tavolo: {node.visible_cards}. Punteggio : {node.delta_score},  Carte Giocatore 1: {node.cards_player1}, Carte Giocatore 2: {node.cards_player2}")
 
