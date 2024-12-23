@@ -19,22 +19,13 @@ def is_prime(number):
 composite_score = 1
 prime_score = 2
 
-# Stupid policies, the player does not look at the cards on the table to do his move, there is no thought mid game
-predetermined_policies = ('asc', 'desc', 'rand')
-# each choice may change on the base of what's on the table
-dynamic_policies = ('greedy_desc', 'greedy_asc')
-all_policies = predetermined_policies + dynamic_policies
-
-
 def is_prime_index(index):
     '''Tells if at position index of the gameboard there are prime cards (True) or composites (False)'''
     return index % 2 == 0
 
-
 # restituisce lo score di una carta
 def card_score(card):
     return prime_score if is_prime(card) else composite_score
-
 
 def is_valid_operation(result, operand1, operand2):
     '''
@@ -52,7 +43,6 @@ def is_valid_operation(result, operand1, operand2):
     if operand1 != 0 and result == operand2 / operand1:
         return True
     return False
-
 
 # Nodo dell'albero
 class Node:
@@ -94,19 +84,10 @@ def best_score(visible_cards, result_card):
     # this nested loop chooses the couples of operands
     # the order does not matter since is_valid_operation deals with it
     for i in range(4):
-        # if you uncomment the following if clause, you remove the possibility to form operations with
-        # the card that the player has just placed. In other words, by commenting the if we allow x#a=x
-        if visible_cards[i] == result_card:
-            continue
-
-        if visible_cards[i] == 0:  # no card placed in position i
-            continue
+        
         for j in range(i + 1, 4):
-            if visible_cards[j] == 0:  # no card placed in position j
-                continue
             
-            # as before, we do not allow a#x=x
-            if visible_cards[j] == result_card:
+            if visible_cards[j] == 0:  # no card placed in position j
                 continue
 
             if not is_valid_operation(result=result_card, operand1=visible_cards[i], operand2=visible_cards[j]):
@@ -234,7 +215,7 @@ def match(seed_value, depths):
         cards_p1, cards_p2 = cards_p2, cards_p1
 
     # Stato iniziale
-    current_node = Node(cards_p1, cards_p2, [0, 0, 0, 0])
+    current_node = Node(cards_p1, cards_p2)
     all_paths = []
 
     for depth in depths:
