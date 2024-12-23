@@ -253,7 +253,7 @@ def match(seed_value, depths):
 if __name__ == "__main__":
 
     seed = 31
-    depths = [6, 6, 12]  # Profondità per 4 turni
+    depths = [6, 6, 12]
     final_score, final_node, all_paths = match(seed, depths)
 
     # Stampa i percorsi
