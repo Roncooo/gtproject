@@ -1,4 +1,3 @@
-from inspect import stack
 import random
 import time
 import copy
@@ -34,22 +33,57 @@ def is_valid_operation(result, operand1, operand2):
     Tells if `operand1` and `operand2` can give `result` with the admitted operations.
     This function automatically checks all the possible order of operands.
     '''
+    
+    if operand1==0 or operand2==0 or result==0:
+        return False
+    
     if result == operand1 + operand2:
         return True
     if result == operand1 - operand2 or result == operand2 - operand1:
         return True
     if result == operand1 * operand2:
         return True
-    if operand2 != 0 and result == operand1 / operand2:
+    if result == operand1 / operand2:
         return True
-    if operand1 != 0 and result == operand2 / operand1:
+    if result == operand2 / operand1:
         return True
     return False
+
+class Stack:
+    '''
+    Apparently Pyhton does not have a built-in or library made stack with the top operation
+    and we need it, so here our own implementation of a Stack.
+    Note that this initializes as empty, and not with a single zero.
+    '''
+    def __init__(self):
+        self.stack = []
+    def push(self, item):
+        self.stack.append(item)
+    def pop(self):
+        if not self.is_empty():
+            return self.stack.pop()
+        raise IndexError("pop from empty stack")
+    def top(self):
+        if not self.is_empty():
+            return self.stack[-1]  # Access the last element
+        raise IndexError("top from empty stack")
+    def safe_top_just_for_print(self):
+        if self.is_empty():
+            return []
+        else:
+            return self.top()
+    def is_empty(self):
+        return len(self.stack) == 0
+    def size(self):
+        return len(self.stack)
+    def __str__(self):
+        return str(self.stack) if self.stack else "[]"
+
 
 # Nodo dell'albero
 class Node:
     def __init__(self, cards_player1: set, cards_player2: set, current_player=1, delta_score=0,
-                 visible_cards=[[0], [0], [0], [0]], card_just_played=None, parent=None):
+                 visible_cards=[Stack(), Stack(), Stack(), Stack()], card_just_played=None, parent=None):
         self.current_player = current_player  # 1 or 2, it's who has to move next (not who has just played)
         self.delta_score = delta_score  # score 1 - score 2
         self.cards_player1 = cards_player1
@@ -106,19 +140,19 @@ def minimax(position, depth, alpha, beta, maximizingPlayer):
 def place_card(visible_cards, new_card, player):
     if player == 1:
         if is_prime(new_card):
-            visible_cards[0].append(new_card)
+            visible_cards[0].push(new_card)
         else:
-            visible_cards[1].append(new_card)
+            visible_cards[1].push(new_card)
     else:
         if is_prime(new_card):
-            visible_cards[2].append(new_card)
+            visible_cards[2].push(new_card)
         else:
-            visible_cards[3].append(new_card)
+            visible_cards[3].push(new_card)
 
 
 def delta(visible_cards):
-    score_p1 = len(visible_cards[0])*prime_score + len(visible_cards[1])*composite_score
-    score_p2 = len(visible_cards[1])*prime_score + len(visible_cards[3])*composite_score
+    score_p1 = visible_cards[0].size()*prime_score + visible_cards[1].size()*composite_score
+    score_p2 = visible_cards[1].size()*prime_score + visible_cards[3].size()*composite_score
     return score_p1 - score_p2
     
 
@@ -130,16 +164,18 @@ def generate_tree(cards_p1, cards_p2, table_cards, depth):
         if node.current_player == 1:
             for c in node.cards_player1:
                 
-                opponent_prime = False if node.visible_cards[2][-1]==0 else node.visible_cards[2][-1]
-                opponent_composite = False if node.visible_cards[3][-1]==0 else node.visible_cards[3][-1]
-                my_prime = False if node.visible_cards[0][-1]==0 else node.visible_cards[0][-1]
-                my_composite = False if node.visible_cards[1][-1]==0 else node.visible_cards[1][-1]
+                opponent_prime = False if node.visible_cards[2].is_empty() else node.visible_cards[2].top()
+                opponent_composite = False if node.visible_cards[3].is_empty() else node.visible_cards[3].top()
+                my_prime = False if node.visible_cards[0].is_empty() else node.visible_cards[0].top()
+                my_composite = False if node.visible_cards[1].is_empty() else node.visible_cards[1].top()
                 
                 # i can steal 2 cards from the opponent
-                if opponent_prime and opponent_composite and is_valid_operation(c, opponent_prime, opponent_composite): 
+                if opponent_prime and opponent_composite and (
+                    is_valid_operation(c, opponent_prime, opponent_composite)
+                ): 
                     new_visible_cards = copy.deepcopy(node.visible_cards)
-                    new_visible_cards[0].append(node.visible_cards[2].pop())
-                    new_visible_cards[1].append(node.visible_cards[3].pop())
+                    new_visible_cards[0].push(new_visible_cards[2].pop())
+                    new_visible_cards[1].push(new_visible_cards[3].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
                     cards_player1_copy = copy.deepcopy(node.cards_player1)
@@ -155,9 +191,12 @@ def generate_tree(cards_p1, cards_p2, table_cards, depth):
                     expand(new_node, depth - 1)
                 
                 # i can steal your prime with my composite or my prime
-                if opponent_prime and (my_composite and is_valid_operation(c, opponent_prime, my_composite)) or (my_prime and is_valid_operation(c, opponent_prime, my_prime)): 
+                if opponent_prime and (
+                    (my_composite and is_valid_operation(c, opponent_prime, my_composite)) or
+                    (my_prime and is_valid_operation(c, opponent_prime, my_prime))
+                ):
                     new_visible_cards = copy.deepcopy(node.visible_cards)
-                    new_visible_cards[0].append(node.visible_cards[2].pop())
+                    new_visible_cards[0].push(new_visible_cards[2].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
                     cards_player1_copy = copy.deepcopy(node.cards_player1)
@@ -173,9 +212,12 @@ def generate_tree(cards_p1, cards_p2, table_cards, depth):
                     expand(new_node, depth - 1)
                     
                 # i can steal your composite with my composite or my prime
-                if opponent_composite and ((my_prime and is_valid_operation(c, opponent_composite, my_prime)) or (my_composite and is_valid_operation(c, opponent_composite, my_composite))): 
+                if opponent_composite and (
+                    (my_prime and is_valid_operation(c, opponent_composite, my_prime)) or 
+                    (my_composite and is_valid_operation(c, opponent_composite, my_composite))
+                ): 
                     new_visible_cards = copy.deepcopy(node.visible_cards)
-                    new_visible_cards[1].append(node.visible_cards[3].pop())
+                    new_visible_cards[1].push(new_visible_cards[3].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
                     cards_player1_copy = copy.deepcopy(node.cards_player1)
@@ -211,16 +253,18 @@ def generate_tree(cards_p1, cards_p2, table_cards, depth):
         else:
             for c in node.cards_player2:
                 
-                opponent_prime = False if node.visible_cards[0][-1]==0 else node.visible_cards[0][-1]
-                opponent_composite = False if node.visible_cards[3][-1]==0 else node.visible_cards[1][-1]
-                my_prime = False if node.visible_cards[2][-1]==0 else node.visible_cards[2][-1]
-                my_composite = False if node.visible_cards[3][-1]==0 else node.visible_cards[3][-1]
+                opponent_prime = False if node.visible_cards[0].is_empty() else node.visible_cards[0].top()
+                opponent_composite = False if node.visible_cards[1].is_empty() else node.visible_cards[1].top()
+                my_prime = False if node.visible_cards[2].is_empty() else node.visible_cards[2].top()
+                my_composite = False if node.visible_cards[3].is_empty() else node.visible_cards[3].top()
                 
                 # i can steal 2 cards from the opponent
-                if opponent_composite and opponent_prime and is_valid_operation(c, opponent_prime, opponent_composite): 
+                if opponent_composite and opponent_prime and (
+                    is_valid_operation(c, opponent_prime, opponent_composite)
+                ): 
                     new_visible_cards = copy.deepcopy(node.visible_cards)
-                    new_visible_cards[2].append(node.visible_cards[0].pop())
-                    new_visible_cards[3].append(node.visible_cards[1].pop())
+                    new_visible_cards[2].push(new_visible_cards[0].pop())
+                    new_visible_cards[3].push(new_visible_cards[1].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
                     cards_player2_copy = copy.deepcopy(node.cards_player2)
@@ -236,9 +280,12 @@ def generate_tree(cards_p1, cards_p2, table_cards, depth):
                     expand(new_node, depth - 1)
                 
                 # i can steal your prime with my composite or my prime
-                if opponent_prime and ((my_composite and is_valid_operation(c, opponent_prime, my_composite)) or (my_prime and is_valid_operation(c, opponent_prime, my_prime))): 
+                if opponent_prime and (
+                    (my_composite and is_valid_operation(c, opponent_prime, my_composite)) or
+                    (my_prime and is_valid_operation(c, opponent_prime, my_prime))
+                ):
                     new_visible_cards = copy.deepcopy(node.visible_cards)
-                    new_visible_cards[2].append(node.visible_cards[0].pop())
+                    new_visible_cards[2].push(new_visible_cards[0].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
                     cards_player2_copy = copy.deepcopy(node.cards_player2)
@@ -254,9 +301,12 @@ def generate_tree(cards_p1, cards_p2, table_cards, depth):
                     expand(new_node, depth - 1)
                     
                 # i can steal your composite with my composite or my prime
-                if opponent_composite and ((my_prime and is_valid_operation(c, opponent_composite, my_prime)) or (my_composite and is_valid_operation(c, opponent_composite, my_composite))): 
+                if opponent_composite and (
+                    (my_prime and is_valid_operation(c, opponent_composite, my_prime)) or 
+                    (my_composite and is_valid_operation(c, opponent_composite, my_composite))
+                ): 
                     new_visible_cards = copy.deepcopy(node.visible_cards)
-                    new_visible_cards[3].append(node.visible_cards[1].pop())
+                    new_visible_cards[3].push(new_visible_cards[1].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
                     cards_player2_copy = copy.deepcopy(node.cards_player2)
@@ -294,11 +344,11 @@ def generate_tree(cards_p1, cards_p2, table_cards, depth):
 
 def match(seed_value, depths):
 
-    deck = np.linspace(start=2, stop=25, num=24, dtype='int')
+    deck = np.linspace(start=2, stop=25, num=24, dtype=int)
     random.seed(seed_value)
     random.shuffle(deck)
-    cards_p1 = set(deck[:12])
-    cards_p2 = set(deck[12:])
+    cards_p1 = set(deck[:12].tolist())
+    cards_p2 = set(deck[12:].tolist())
 
     if 2 not in cards_p1:
         cards_p1, cards_p2 = cards_p2, cards_p1
@@ -308,6 +358,8 @@ def match(seed_value, depths):
     all_paths = []
 
     for depth in depths:
+        start = time.time()
+        
         # Genera l'albero per il turno corrente
         root = generate_tree(current_node.cards_player1, current_node.cards_player2, current_node.visible_cards, depth)
         score, leaf_minimax = minimax(root, depth, float('-inf'), float('+inf'), True)
@@ -317,7 +369,8 @@ def match(seed_value, depths):
         path = Node.get_path(leaf_minimax)
         all_paths.append(path)
         
-        print(f"End of level {depth}")
+        end = time.time()
+        print(f"Done {depth} levels in {end-start:.2f} s")
 
     return score, current_node, all_paths
 
@@ -325,13 +378,12 @@ def match(seed_value, depths):
 if __name__ == "__main__":
 
     seed = 31
-    # depths = [4, 6, 6, 8]  # Profondità per 4 turni
-    depths = [4] * 6
+    depths = [4, 4, 6, 8]  # Profondità per 4 turni
     final_score, final_node, all_paths = match(seed, depths)
 
     # Stampa i percorsi
     for i, path in enumerate(all_paths):
         print(f"Path {i+1}:")
         for node in path[1:]:
-            print(f"Giocatore {node.parent.current_player} ha giocato la carta {node.card_just_played} Stato del tavolo: {[node.visible_cards[i][-1] for i in range(0,4)]}. Punteggio : {node.delta_score}, Carte Giocatore 1: {node.cards_player1}, Carte Giocatore 2: {node.cards_player2}")
+            print(f"Giocatore {node.parent.current_player} ha giocato la carta {node.card_just_played} Stato del tavolo: {[node.visible_cards[i].safe_top_just_for_print() for i in range(0,4)]}. Punteggio : {node.delta_score}, Carte Giocatore 1: {node.cards_player1}, Carte Giocatore 2: {node.cards_player2}")
 
