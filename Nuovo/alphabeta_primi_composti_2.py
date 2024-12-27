@@ -152,7 +152,7 @@ def place_card(visible_cards, new_card, player):
 
 def delta(visible_cards):
     score_p1 = visible_cards[0].size()*prime_score + visible_cards[1].size()*composite_score
-    score_p2 = visible_cards[1].size()*prime_score + visible_cards[3].size()*composite_score
+    score_p2 = visible_cards[2].size()*prime_score + visible_cards[3].size()*composite_score
     return score_p1 - score_p2
     
 

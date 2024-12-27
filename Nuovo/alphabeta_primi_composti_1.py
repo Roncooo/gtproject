@@ -106,20 +106,11 @@ def best_score(visible_cards, result_card):
     # if no valid operation is found, it is just placed_card_score so 1 or 2
     return best_operation_score + placed_card_score
 
-# Questa funzione valuta un nodo del gioco calcolando la differenza di punteggio tra i giocatori.
-def evaluate(node: Node):
-    if node.parent == None:
-        return 0
-    if node.current_player == 1:
-        return evaluate(node.parent) - best_score(node.parent.visible_cards, node.card_just_played)
-    else:
-        return evaluate(node.parent) + best_score(node.parent.visible_cards, node.card_just_played)
-
 
 def minimax(position, depth, alpha, beta, maximizingPlayer):
 
     if depth == 0 or not position.children:  # Check for leaf node or game over
-        return evaluate(position), position
+        return position.delta_score, position
 
     if maximizingPlayer:
         maxEval = float('-inf')
