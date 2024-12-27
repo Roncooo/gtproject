@@ -48,7 +48,7 @@ def is_valid_operation(result, operand1, operand2):
 class Node:
     def __init__(self, cards_player1: set, cards_player2: set, current_player=1, delta_score=0,
                  visible_cards=[0, 0, 0, 0], card_just_played=None, parent=None):
-        self.current_player = current_player  # 1 or 2
+        self.current_player = current_player  # 1 or 2, it's who has to move next (not who has just played)
         self.delta_score = delta_score  # score 1 - score 2
         self.cards_player1 = cards_player1
         self.cards_player2 = cards_player2
@@ -240,6 +240,6 @@ if __name__ == "__main__":
     # Stampa i percorsi
     for i, path in enumerate(all_paths):
         print(f"Path {i+1}:")
-        for node in path:
-            print(f"Giocatore {node.current_player} ha giocato la carta {node.card_just_played} Stato del tavolo: {node.visible_cards}. Punteggio : {node.delta_score},  Carte Giocatore 1: {node.cards_player1}, Carte Giocatore 2: {node.cards_player2}")
+        for node in path[1:]:
+            print(f"Giocatore {node.parent.current_player} ha giocato la carta {node.card_just_played} Stato del tavolo: {node.visible_cards}. Punteggio : {node.delta_score}, Carte Giocatore 1: {node.cards_player1}, Carte Giocatore 2: {node.cards_player2}")
 

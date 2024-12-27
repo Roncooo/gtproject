@@ -52,3 +52,4 @@ The code is written in python. To run it, make sure to have all the dependencies
 
 * greedy random policy on the simulation (and then run the cross policy simulation for a bit)
 
+* understand if evaluate is needed or not in minimax
