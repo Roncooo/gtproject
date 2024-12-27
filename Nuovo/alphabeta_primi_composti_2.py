@@ -1,7 +1,8 @@
 import random
 import time
 import copy
-
+from Stack import Stack
+from Node import Node
 import numpy as np
 
 # Costanti
@@ -48,62 +49,6 @@ def is_valid_operation(result, operand1, operand2):
     if result == operand2 / operand1:
         return True
     return False
-
-class Stack:
-    '''
-    Apparently Pyhton does not have a built-in or library made stack with the top operation
-    and we need it, so here our own implementation of a Stack.
-    Note that this initializes as empty, and not with a single zero.
-    '''
-    def __init__(self):
-        self.stack = []
-    def push(self, item):
-        self.stack.append(item)
-    def pop(self):
-        if not self.is_empty():
-            return self.stack.pop()
-        raise IndexError("pop from empty stack")
-    def top(self):
-        if not self.is_empty():
-            return self.stack[-1]  # Access the last element
-        raise IndexError("top from empty stack")
-    def safe_top_just_for_print(self):
-        if self.is_empty():
-            return []
-        else:
-            return self.top()
-    def is_empty(self):
-        return len(self.stack) == 0
-    def size(self):
-        return len(self.stack)
-    def __str__(self):
-        return str(self.stack) if self.stack else "[]"
-
-
-# Nodo dell'albero
-class Node:
-    def __init__(self, cards_player1: set, cards_player2: set, current_player=1, delta_score=0,
-                 visible_cards=[Stack(), Stack(), Stack(), Stack()], card_just_played=None, parent=None):
-        self.current_player = current_player  # 1 or 2, it's who has to move next (not who has just played)
-        self.delta_score = delta_score  # score 1 - score 2
-        self.cards_player1 = cards_player1
-        self.cards_player2 = cards_player2
-        self.visible_cards = visible_cards  # [p1, c1, p2, c2] now 4 stacks
-        self.card_just_played = card_just_played
-        self.children = []
-        self.parent = parent
-
-    def add_child(self, child_node):
-        self.children.append(child_node)
-
-    def get_path(self):
-        path = []
-        current = self
-        while current is not None:
-            path.append(current)
-            current = current.parent
-        return path[::-1]  # Inverti per avere il percorso dalla radice
-
 
 def minimax(position, depth, alpha, beta, maximizingPlayer):
 
@@ -354,7 +299,7 @@ def match(seed_value, depths):
         cards_p1, cards_p2 = cards_p2, cards_p1
 
     # Stato iniziale
-    current_node = Node(cards_p1, cards_p2)
+    current_node = Node(cards_p1, cards_p2, visible_cards=[Stack(), Stack(), Stack(), Stack()])
     all_paths = []
 
     for depth in depths:
