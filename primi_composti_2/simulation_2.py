@@ -2,7 +2,7 @@ import numpy as np
 import random
 import time
 from prettytable import PrettyTable 
-from Stack import Stack
+from utilities.Stack import Stack
 
 max_card = 25
 num_card = 24

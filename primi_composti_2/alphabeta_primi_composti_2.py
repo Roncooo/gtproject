@@ -1,8 +1,8 @@
 import random
 import time
 import copy
-from Stack import Stack
-from Node import Node
+from utilities.Stack import Stack
+from utilities.Node import Node
 import numpy as np
 
 # Costanti

@@ -1,6 +1,6 @@
 import random
 import time
-from Node import Node
+from utilities.Node import Node
 
 import numpy as np
 
