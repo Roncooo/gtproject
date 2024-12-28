@@ -18,7 +18,7 @@ class Stack:
         raise IndexError("top from empty stack")
     def safe_top_just_for_print(self):
         if self.is_empty():
-            return []
+            return '_'
         else:
             return self.top()
     def is_empty(self):

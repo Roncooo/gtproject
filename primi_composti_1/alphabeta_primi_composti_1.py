@@ -1,49 +1,8 @@
 import random
-import time
 from utilities.Node import Node
-
+from utilities.utils import *
 import numpy as np
-
-# Costanti
-PRIMI = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73}
-COMPOSTI = set(range(2, 74)) - PRIMI
-ALL_NUMBERS = (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)
-IS_PRIME = (
-True, True, False, True, False, True, False, False, False, True, False, True, False, False, False, True, False, True,
-False, False, False, True, False, False)
-
-#mi dice se il numero in questione è primo
-def is_prime(number):
-    return IS_PRIME[number - 2]
-
-
-composite_score = 1
-prime_score = 2
-
-def is_prime_index(index):
-    '''Tells if at position index of the gameboard there are prime cards (True) or composites (False)'''
-    return index % 2 == 0
-
-# restituisce lo score di una carta
-def card_score(card):
-    return prime_score if is_prime(card) else composite_score
-
-def is_valid_operation(result, operand1, operand2):
-    '''
-    Tells if `operand1` and `operand2` can give `result` with the admitted operations.
-    This function automatically checks all the possible order of operands.
-    '''
-    if result == operand1 + operand2:
-        return True
-    if result == operand1 - operand2 or result == operand2 - operand1:
-        return True
-    if result == operand1 * operand2:
-        return True
-    if operand2 != 0 and result == operand1 / operand2:
-        return True
-    if operand1 != 0 and result == operand2 / operand1:
-        return True
-    return False
+import time
 
 def best_score(visible_cards, result_card):
     '''
@@ -51,7 +10,7 @@ def best_score(visible_cards, result_card):
     Tries all possible combinations of operands and operations.
     Stops if the theoretical best score for that particular position is detected or when all possibilities are calculated.
     '''
-    max_operation_score = 2 * prime_score
+    max_operation_score = 2 * PRIME_SCORE
     placed_card_score = card_score(result_card)
     best_operation_score = 0  # best score found so far
 
@@ -67,8 +26,8 @@ def best_score(visible_cards, result_card):
             if not is_valid_operation(result=result_card, operand1=visible_cards[i], operand2=visible_cards[j]):
                 continue
 
-            score_card_i = prime_score if is_prime_index(i) else composite_score
-            score_card_j = prime_score if is_prime_index(j) else composite_score
+            score_card_i = PRIME_SCORE if is_prime_index(i) else COMPOSITE_SCORE
+            score_card_j = PRIME_SCORE if is_prime_index(j) else COMPOSITE_SCORE
             current_operation_score = score_card_i + score_card_j
 
             if current_operation_score > best_operation_score:
@@ -170,11 +129,12 @@ def generate_tree(cards_p1, cards_p2, table_cards, depth):
 
 def match(seed_value, depths):
 
-    deck = np.linspace(start=2, stop=25, num=24, dtype='int')
-    random.seed(seed_value)
+    deck = np.linspace(start=LOWEST_CARD, stop=HIGHEST_CARD, num=NUMBER_OF_CARDS, dtype='int')
+    if seed_value != None:
+        random.seed(seed_value)
     random.shuffle(deck)
-    cards_p1 = set(deck[:12])
-    cards_p2 = set(deck[12:])
+    cards_p1 = set(deck[:NUM_CARDS_PER_PLAYER])
+    cards_p2 = set(deck[NUM_CARDS_PER_PLAYER:])
 
     if 2 not in cards_p1:
         cards_p1, cards_p2 = cards_p2, cards_p1
@@ -184,6 +144,8 @@ def match(seed_value, depths):
     all_paths = []
 
     for depth in depths:
+        start = time.time()
+        
         # Genera l'albero per il turno corrente
         root = generate_tree(current_node.cards_player1, current_node.cards_player2, current_node.visible_cards, depth)
         score, leaf_minimax = minimax(root, depth, float('-inf'), float('+inf'), True)
@@ -192,19 +154,9 @@ def match(seed_value, depths):
         current_node = leaf_minimax
         path = Node.get_path(leaf_minimax)
         all_paths.append(path)
+        
+        end = time.time()
+        print(f"Done {depth} levels in {end-start:.2f} s")
 
     return score, current_node, all_paths
-
-
-if __name__ == "__main__":
-
-    seed = 31
-    depths = [6, 6, 12]  # Profondità per 4 turni
-    final_score, final_node, all_paths = match(seed, depths)
-
-    # Stampa i percorsi
-    for i, path in enumerate(all_paths):
-        print(f"Path {i+1}:")
-        for node in path[1:]:
-            print(f"Giocatore {node.parent.current_player} ha giocato la carta {node.card_just_played} Stato del tavolo: {node.visible_cards}. Punteggio : {node.delta_score}, Carte Giocatore 1: {node.cards_player1}, Carte Giocatore 2: {node.cards_player2}")
 

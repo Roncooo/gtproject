@@ -1,56 +1,12 @@
 import numpy as np
 import random
-import time
 from prettytable import PrettyTable 
-
-max_card = 25
-num_card = 24
-cards_per_player = int(num_card/2)
-composite_score = 1
-prime_score = 2
-
-# Stupid policies, the player does not look at the cards on the table to do his move, there is no thought mid game
-predetermined_policies = ('asc', 'desc', 'rand')
-# each choice may change on the base of what's on the table
-dynamic_policies = ('greedy_desc', 'greedy_asc')
-all_policies = predetermined_policies + dynamic_policies
-
-# Useful to save some computation: this gives the answer in O(1)
-IS_PRIME = (True,True,False,True,False,True,False,False,False,True,False,True,False,False,False,True,False,True,False,False,False,True,False,False)
-def is_prime(number):
-    return IS_PRIME[number-2]
-
-def is_prime_index(index):
-    '''Tells if at position index there are prime cards (True) or composites (False)'''
-    return index%2==0
-
-def is_valid_operation(result, operand1, operand2):
-    '''
-    Tells if `operand1` and `operand2` can give `result` with the admitted operations.
-    This function automatically checks all the possible order of operands.
-    '''
-        
-    if operand1==0 or operand2==0 or result==0:
-        return False
-    
-    if result==operand1+operand2:
-        return True
-    if result==operand1-operand2 or result==operand2-operand1:
-        return True
-    if result==operand1*operand2:
-        return True
-    if operand2!=0 and result==operand1/operand2:
-        return True
-    if operand1!=0 and result==operand2/operand1:
-        return True
-    return False
+from utilities.utils import *
+from utilities.policies import *
 
 def card_score_by_index(card_index):
     ''' Returns the score of a single card '''
-    return prime_score if is_prime_index(card_index) else composite_score
-
-def card_score(card):
-    return prime_score if is_prime(card) else composite_score
+    return PRIME_SCORE if is_prime_index(card_index) else COMPOSITE_SCORE
 
 def best_score(visible_cards, result_card):    
     '''
@@ -58,7 +14,7 @@ def best_score(visible_cards, result_card):
     Tries all possible combinations of operands and operations.
     Stops if the theoretical best score for that particular position is detected or when all possibilities are calculated.
     '''
-    max_operation_score = 3*prime_score
+    max_operation_score = 3*PRIME_SCORE
     placed_card_score = card_score(result_card)
     best_operation_score = 0 # best score found so far
     
@@ -75,8 +31,8 @@ def best_score(visible_cards, result_card):
             if not is_valid_operation(result=result_card, operand1=visible_cards[i], operand2=visible_cards[j]):
                 continue
             
-            score_card_i = prime_score if is_prime_index(i) else composite_score
-            score_card_j = prime_score if is_prime_index(j) else composite_score
+            score_card_i = PRIME_SCORE if is_prime_index(i) else COMPOSITE_SCORE
+            score_card_j = PRIME_SCORE if is_prime_index(j) else COMPOSITE_SCORE
             current_operation_score = score_card_i + score_card_j
             
             if current_operation_score > best_operation_score:
@@ -89,10 +45,10 @@ def best_score(visible_cards, result_card):
     return best_operation_score + placed_card_score
 
 
-
 def place_card_index(card, player_number):
     ''' Tells on which index (in [0,3]) to place a card '''
     return (player_number-1)*2+(0 if is_prime(card) else 1)
+
 
 def sort_deck_according_to_policy(policy, player_deck):
     ''' Returns the array of cards sorted according to a policy '''
@@ -108,12 +64,12 @@ def choose_card_by_policy(player_deck, policy, starting_index, visible_cards):
     ''' returns the player_deck with, in position `starting_index`, the next card to be played. `starting_index` is the index from which I start looking for the next card, all those before are already played. '''
     
     # policy is easy, the deck is already sorted accordingly
-    if policy in predetermined_policies:
+    if policy in PREDETERMINED_POLICIES:
         return player_deck
     
     # player_deck is already sorted accordingly
     if policy == 'greedy_desc' or policy == 'greedy_asc':
-        theoretical_highest_score = 3*prime_score
+        theoretical_highest_score = 3*PRIME_SCORE
         current_high_score = 0 # the best we can obtain with all the cards (theoretical highest is 3*prime_score)
         best_card_index = starting_index # first card found with the highest score
         # I only look at cards from position `starting_index` to the end of the deck because those in positions [0:starting_index] are already played
@@ -138,15 +94,15 @@ def choose_card_by_policy(player_deck, policy, starting_index, visible_cards):
     
 def play_one_game(policy1, policy2, seed=None):
     
-    deck = np.linspace(start=2, stop=max_card, num=num_card, dtype='int')
+    deck = np.linspace(start=2, stop=HIGHEST_CARD, num=NUMBER_OF_CARDS, dtype='int')
     
     if seed != None:
         random.seed(seed)
     
     random.shuffle(deck)
 
-    deck_p1 = deck[:cards_per_player]
-    deck_p2 = deck[cards_per_player:]
+    deck_p1 = deck[:NUM_CARDS_PER_PLAYER]
+    deck_p2 = deck[NUM_CARDS_PER_PLAYER:]
     
     # player1 is the first to play: according to the rules, he must have 2 in his deck
     # if this is not the case i switch the decks
@@ -163,7 +119,7 @@ def play_one_game(policy1, policy2, seed=None):
     # [primes p1, composites p1, primes p2, composites p2]
     visible_cards = np.zeros(4, dtype='int')
 
-    for i in range(cards_per_player):
+    for i in range(NUM_CARDS_PER_PLAYER):
         
         # this puts in position i the card that is chosen to be played
         deck_p1 = choose_card_by_policy(deck_p1, policy1, i, visible_cards)
@@ -184,24 +140,33 @@ def play_one_game(policy1, policy2, seed=None):
 
 
 def print_game(deck_p1, deck_p2):
+    table = PrettyTable()
+    table.field_names = ["Player", "Played card", "Gameboard", "Score P1", "Score P2", "Deck P1", "Deck P2"]
+    table.border = False
+    # Set all columns to left-align
+    for column in table.field_names:
+        table.align[column] = "l"
     
     visible_cards = np.zeros(4, dtype=int)
     score1 = score2 = 0
     
-    for i in range(cards_per_player):
+    for i in range(NUM_CARDS_PER_PLAYER):
         card_p1, card_p2 = deck_p1[i], deck_p2[i] 
         
         score1 += best_score(visible_cards, result_card=card_p1)
         card_index = place_card_index(card_p1, player_number=1)
         visible_cards[card_index] = card_p1
         show_visible_cards = '[' + " ".join("_" if x == 0 else str(x) for x in visible_cards) + ']'
-        print(f"Giocatore {1} ha giocato la carta {card_p1} Stato del tavolo: {show_visible_cards}. Punteggio - Giocatore 1: {score1}, Giocatore 2: {score2}, Carte Giocatore 1: {deck_p1[i+1:]}, Carte Giocatore 2: {deck_p2[i:]}")
+        # here deck_p2[i:] is needed (without +1) because otherwise we would show as if P2 already played his move
+        table.add_row([1, card_p1, show_visible_cards, score1, score2, deck_p1[i+1:], deck_p2[i:]])
 
         show_visible_cards = '[' + " ".join("_" if x == 0 else str(x) for x in visible_cards) + ']'
         score2 += best_score(visible_cards, result_card=card_p2)
         card_index = place_card_index(card_p2, player_number=2)
         visible_cards[card_index] = card_p2
-        print(f"Giocatore {2} ha giocato la carta {card_p2} Stato del tavolo: {show_visible_cards}. Punteggio - Giocatore 1: {score1}, Giocatore 2: {score2}, Carte Giocatore 1: {deck_p1[i+1:]}, Carte Giocatore 2: {deck_p2[i+1:]}")
+        table.add_row([2, card_p2, show_visible_cards, score1, score2, deck_p1[i+1:], deck_p2[i+1:]])
+    
+    print(table)
 
 
 def play_n_games(policy1, policy2, n_games, seed=None, log_game=False):
@@ -234,7 +199,7 @@ def play_n_games(policy1, policy2, n_games, seed=None, log_game=False):
     return winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff
 
 
-def play_n_games_for_each_policy_combination(n_games=1000, policies=all_policies, seed=None, log_game=False):
+def play_n_games_for_each_policy_combination(n_games=1000, policies=ALL_POLICIES, seed=None, log_game=False):
     results = []
     for p1 in policies:
         row = []
@@ -259,14 +224,3 @@ def print_results(results, policies, show_scores=False):
     print("For each cell, win rate p1 (average score p1) | tie rate | win rate p2 (average score p2) | abs average score difference")
     print(myTable)
 
-
-if __name__ == "__main__":
-    n_games = 1 # remember to disable all the prints in play_one_game to speed up the process (a lot)
-    policies = all_policies
-    
-    start = time.time()
-    results = play_n_games_for_each_policy_combination(n_games = n_games, policies=policies, seed=31, log_game=True)
-    end = time.time()
-    
-    print_results(results, policies, True)
-    print(f"{n_games} games for each combination, total time: {end-start:.2f} seconds")
