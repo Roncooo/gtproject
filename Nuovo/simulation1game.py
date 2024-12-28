@@ -29,6 +29,10 @@ def is_valid_operation(result, operand1, operand2):
     Tells if `operand1` and `operand2` can give `result` with the admitted operations.
     This function automatically checks all the possible order of operands.
     '''
+        
+    if operand1==0 or operand2==0 or result==0:
+        return False
+    
     if result==operand1+operand2:
         return True
     if result==operand1-operand2 or result==operand2-operand1:
@@ -100,7 +104,7 @@ def sort_deck_according_to_policy(policy, player_deck):
         case 'rand': return player_deck
 
 
-def choose_card(player_deck, policy, starting_index, gameboard):
+def choose_card_by_policy(player_deck, policy, starting_index, visible_cards):
     ''' returns the player_deck with, in position `starting_index`, the next card to be played. `starting_index` is the index from which I start looking for the next card, all those before are already played. '''
     
     # policy is easy, the deck is already sorted accordingly
@@ -115,7 +119,7 @@ def choose_card(player_deck, policy, starting_index, gameboard):
         # I only look at cards from position `starting_index` to the end of the deck because those in positions [0:starting_index] are already played
         for i, card in enumerate(player_deck[starting_index:]):
             # suppose I want to place this card, I would obtain
-            this_score = best_score(visible_cards=gameboard, result_card=card)
+            this_score = best_score(visible_cards=visible_cards, result_card=card)
             if this_score > current_high_score:
                 current_high_score = this_score
                 best_card_index = i + starting_index
@@ -162,7 +166,7 @@ def play_one_game(policy1, policy2, seed=None):
     for i in range(cards_per_player):
         
         # this puts in position i the card that is chosen to be played
-        deck_p1 = choose_card(deck_p1, policy1, i, visible_cards)
+        deck_p1 = choose_card_by_policy(deck_p1, policy1, i, visible_cards)
         # this actually picks the card
         card1 = deck_p1[i]
         card_index = place_card_index(card1, player_number=1)
@@ -170,7 +174,7 @@ def play_one_game(policy1, policy2, seed=None):
         # places the card in the table
         visible_cards[card_index] = card1
 
-        deck_p2 = choose_card(deck_p2, policy2, i, visible_cards)
+        deck_p2 = choose_card_by_policy(deck_p2, policy2, i, visible_cards)
         card2 = deck_p2[i]
         card_index = place_card_index(card2, player_number=2)
         score2 += best_score(visible_cards, result_card=card2)
