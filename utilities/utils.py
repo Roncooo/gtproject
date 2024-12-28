@@ -1,4 +1,5 @@
-
+import numpy as np
+import random
 # Useful to save some computation: this gives the answer in O(1)
 IS_PRIME = (
 True , True , False, True , False, 
@@ -77,3 +78,16 @@ def is_valid_operation(result: int, operand1: int, operand2: int):
     if result == operand2 / operand1:
         return True
     return False
+
+
+def set_initial_players_deck(seed_value):
+    deck = np.linspace(start=LOWEST_CARD, stop=HIGHEST_CARD, num=NUMBER_OF_CARDS, dtype='int')
+
+    if seed_value != None:
+        random.seed(seed_value)
+
+    random.shuffle(deck)
+    cards_p1 = set(deck[:NUM_CARDS_PER_PLAYER])
+    cards_p2 = set(deck[NUM_CARDS_PER_PLAYER:])
+
+    return cards_p1, cards_p2

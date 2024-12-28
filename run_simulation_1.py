@@ -1,5 +1,4 @@
-from gtproject.utilities.policies import ALL_POLICIES
-from primi_composti_1.simulation_1 import *
+from gtproject.Simulations.simulation_1 import *
 import time
 
 if __name__ == "__main__":

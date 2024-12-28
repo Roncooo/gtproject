@@ -1,43 +1,12 @@
-import random
-import time
 import copy
-import numpy as np
-from  gtproject.utilities.Stack import Stack
 from  gtproject.utilities.Node import Node
 from  gtproject.utilities.utils import *
 
 
-def minimax(position, depth, alpha, beta, maximizingPlayer):
-
-    if depth == 0 or not position.children:  # Check for leaf node or game over
-        return position.delta_score, position
-
-    if maximizingPlayer:
-        maxEval = float('-inf')
-        bestLeaf = None
-        for child in position.children:
-            eval, leaf = minimax(child, depth - 1, alpha, beta, False)
-            if eval > maxEval:
-                maxEval = eval
-                bestLeaf = leaf
-            alpha = max(alpha, eval)
-            if beta <= alpha:
-                break
-        return maxEval, bestLeaf
-
-    else:
-        minEval = float('+inf')
-        bestLeaf = None
-        for child in position.children:
-            eval, leaf = minimax(child, depth - 1, alpha, beta, True)
-            if eval < minEval:
-                minEval = eval
-                bestLeaf = leaf
-            beta = min(beta, eval)
-            if beta <= alpha:
-                break
-        return minEval, bestLeaf
-
+def delta(visible_cards):
+    score_p1 = visible_cards[0].size()*PRIME_SCORE + visible_cards[1].size()*COMPOSITE_SCORE
+    score_p2 = visible_cards[2].size()*PRIME_SCORE + visible_cards[3].size()*COMPOSITE_SCORE
+    return score_p1 - score_p2
 
 def place_card(visible_cards, new_card, player):
     if player == 1:
@@ -51,14 +20,7 @@ def place_card(visible_cards, new_card, player):
         else:
             visible_cards[3].push(new_card)
 
-
-def delta(visible_cards):
-    score_p1 = visible_cards[0].size()*PRIME_SCORE + visible_cards[1].size()*COMPOSITE_SCORE
-    score_p2 = visible_cards[2].size()*PRIME_SCORE + visible_cards[3].size()*COMPOSITE_SCORE
-    return score_p1 - score_p2
-    
-
-def generate_tree(cards_p1, cards_p2, table_cards, depth):
+def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
     root = Node(cards_p1, cards_p2, visible_cards=table_cards)
     def expand(node: Node, depth):
         if depth == 0:
@@ -243,36 +205,3 @@ def generate_tree(cards_p1, cards_p2, table_cards, depth):
     expand(root, depth)
     return root
 
-
-def match(seed_value, depths):
-
-    deck = np.linspace(start=LOWEST_CARD, stop=HIGHEST_CARD, num=NUMBER_OF_CARDS, dtype='int')
-    if seed_value!=None:
-        random.seed(seed_value)
-    random.shuffle(deck)
-    cards_p1 = set(deck[:NUM_CARDS_PER_PLAYER])
-    cards_p2 = set(deck[NUM_CARDS_PER_PLAYER:])
-
-    if 2 not in cards_p1:
-        cards_p1, cards_p2 = cards_p2, cards_p1
-
-    # Stato iniziale
-    current_node = Node(cards_p1, cards_p2, visible_cards=[Stack(), Stack(), Stack(), Stack()])
-    all_paths = []
-
-    for depth in depths:
-        start = time.time()
-        
-        # Genera l'albero per il turno corrente
-        root = generate_tree(current_node.cards_player1, current_node.cards_player2, current_node.visible_cards, depth)
-        score, leaf_minimax = minimax(root, depth, float('-inf'), float('+inf'), True)
-
-        # Aggiorna lo stato per il prossimo turno
-        current_node = leaf_minimax
-        path = Node.get_path(leaf_minimax)
-        all_paths.append(path)
-        
-        end = time.time()
-        print(f"Done {depth} levels in {end-start:.2f} s")
-
-    return score, current_node, all_paths
