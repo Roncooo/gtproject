@@ -1,9 +1,9 @@
 import numpy as np
 import random
 from prettytable import PrettyTable 
-from gtproject.utilities.Stack import Stack
-from gtproject.utilities.utils import *
-from gtproject.utilities.policies import *
+from utilities.Stack import Stack
+from utilities.utils import *
+from utilities.policies import *
 
 
 def best_score(visible_cards, result_card, current_player):

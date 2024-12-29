@@ -1,5 +1,5 @@
-from gtproject.utilities.Node import Node
-from gtproject.utilities.utils import *
+from utilities.Node import Node
+from utilities.utils import *
 
 def best_score(visible_cards, result_card):
     '''

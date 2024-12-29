@@ -1,8 +1,8 @@
 import numpy as np
 import random
 from prettytable import PrettyTable 
-from gtproject.utilities.utils import *
-from gtproject.utilities.policies import *
+from utilities.utils import *
+from utilities.policies import *
 
 
 

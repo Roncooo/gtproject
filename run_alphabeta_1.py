@@ -1,6 +1,6 @@
-from gtproject.Alphabeta_pruning.resolve_tree import resolve
-from gtproject.utilities.utils import set_initial_players_deck
-from gtproject.utilities.Node import *
+from Alphabeta_pruning.resolve_tree import resolve
+from utilities.utils import set_initial_players_deck
+from utilities.Node import *
 from prettytable import PrettyTable 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
-from gtproject.Alphabeta_pruning.tree_primi_composti_1 import generate_tree_1
-from gtproject.Alphabeta_pruning.tree_primi_composti_2 import generate_tree_2
-from gtproject.utilities.Node import Node
-from gtproject.utilities.Stack import *
+from Alphabeta_pruning.tree_primi_composti_1 import generate_tree_1
+from Alphabeta_pruning.tree_primi_composti_2 import generate_tree_2
+from utilities.Node import Node
+from utilities.Stack import *
 import time
 
 

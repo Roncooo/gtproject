@@ -1,6 +1,6 @@
 import copy
-from  gtproject.utilities.Node import Node
-from  gtproject.utilities.utils import *
+from  utilities.Node import Node
+from  utilities.utils import *
 
 
 def delta(visible_cards):

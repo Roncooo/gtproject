@@ -1,4 +1,4 @@
-from gtproject.Simulations.simulation_1 import *
+from Simulations.simulation_1 import *
 import time
 
 if __name__ == "__main__":
