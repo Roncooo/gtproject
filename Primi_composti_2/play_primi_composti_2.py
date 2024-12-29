@@ -137,7 +137,6 @@ def play_one_game_2(policy1, policy2, seed=None):
     if 2 not in deck_p1:
         deck_p1, deck_p2 = deck_p2, deck_p1
 
-    deck_p1, deck_p2
     
     # For predetermined policies, this sorting is all choose_card needs.
     # For dynamic policies, the sorting helps with the time complexity.
