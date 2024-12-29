@@ -15,9 +15,18 @@ class Node:
         self.children.append(child_node)
 
     def get_path(self):
+        '''
+        returns a list of nodes from the root to self
+        '''
         path = []
         current = self
         while current is not None:
             path.append(current)
             current = current.parent
-        return path[::-1]  # Inverti per avere il percorso dalla radice
+        return path[::-1]
+    
+    def get_root(self):
+        current = self
+        while current.parent is not None:
+            current = current.parent
+        return current

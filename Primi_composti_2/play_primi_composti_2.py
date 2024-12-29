@@ -1,7 +1,10 @@
 from utilities.Stack import Stack
 from utilities.utils import *
 from utilities.policies import *
-
+from utilities.simulations import sort_deck_according_to_policy
+import copy
+from utilities.solve_tree import minimax
+from Primi_composti_2.tree_primi_composti_2 import generate_tree_2
 
 def best_score(visible_cards, result_card, current_player):
     '''
@@ -46,16 +49,6 @@ def best_score(visible_cards, result_card, current_player):
     return total_best_score
 
 
-def sort_deck_according_to_policy(policy, player_deck):
-    ''' Returns the array of cards sorted according to a policy '''
-    match policy:
-        case 'asc': return np.sort(player_deck)
-        case 'greedy_asc': return np.sort(player_deck)
-        case 'desc': return np.sort(player_deck)[::-1]
-        case 'greedy_desc': return np.sort(player_deck)[::-1]
-        case 'rand': return player_deck
-
-
 def find_stolen_card_indexes(played_card, points_made, player):
     '''
     Given `played_card`, `poins_made` and `player`, returns the indexes (among the visible_cards) of the cards stolen to my opponent in the best action possible. Returns, in order and possibly -1, the index of the stolen PRIME card and then the index of the COMPOSITE card.
@@ -70,37 +63,52 @@ def find_stolen_card_indexes(played_card, points_made, player):
         case 3: return opponent_prime_index(player), opponent_composite_index(player)
     
 
-def choose_card_by_policy(player_deck, policy, starting_index, visible_cards, current_player):
-    ''' returns the player_deck with, in position `starting_index`, the next card to be played. `starting_index` is the index from which I start looking for the next card, all those before are already played. '''
+def choose_card_by_policy_2(my_deck, opponent_deck, policy, my_starting_index, opponent_starting_index, visible_cards, current_player):
+    ''' returns the my_deck with, in position `my_starting_index`, the next card to be played. `my_starting_index` is the index from which I start looking for the next card, all those before are already played. 
+    opponent_deck and opponent_starting_index are needed only for MINIMAX_POLICIES
+    '''
     
     # policy is easy, the deck is already sorted accordingly
     if policy in PREDETERMINED_POLICIES:
-        return player_deck
+        return my_deck
     
     # player_deck is already sorted accordingly
-    if policy == 'greedy_desc' or policy == 'greedy_asc':
+    if policy == 'greedy_desc' or policy == 'greedy_asc' or policy == 'greedy_rand':
         theoretical_highest_score = 5 # I steal a prime and a composite and i place my prime
         current_high_score = 0 # the best we can obtain with all the cards
-        best_card_index = starting_index # first card found with the highest score
+        best_card_index = my_starting_index # first card found with the highest score
         
-        # I only look at cards from position `starting_index` to the end of the deck because those in positions [0:starting_index] are already played
-        for i, card in enumerate(player_deck[starting_index:]):
+        # I only look at cards from position `my_starting_index` to the end of the deck because those in positions [0:my_starting_index] are already played
+        for i, card in enumerate(my_deck[my_starting_index:]):
             # suppose I want to place this card, I would obtain
             this_score = best_score(visible_cards=visible_cards, result_card=card, current_player=current_player)
             if this_score > current_high_score:
                 current_high_score = this_score
-                best_card_index = i + starting_index
+                best_card_index = i + my_starting_index
             if this_score == theoretical_highest_score: # no need of checking other cards
                 break
         
         # this swapping is needed to move to the beginning the cards already used
-        # then with player_deck[starting_index:] we can iterate over just new cards
+        # then with player_deck[my_starting_index:] we can iterate over just new cards
             # example: deck is [2,3,4,5,6,7], player has already played 2 (we are now at iteration 1)
             # if we decide to play 7 then we rearrange the deck to be [2,7,3,4,5,6] so that deck[starting_index] is 7
-        temp = player_deck[best_card_index]
-        player_deck = np.insert(np.delete(player_deck, best_card_index), starting_index, temp)
+        temp = my_deck[best_card_index]
+        my_deck = np.insert(np.delete(my_deck, best_card_index), my_starting_index, temp)
 
-        return player_deck
+        return my_deck
+    
+    if policy in MINIMAX_POLICIES:
+        # minimax policies only have depths that are one digit values and so i can take the last char and convert it to int
+        depth = int(policy[-1])
+        root = generate_tree_2(set(my_deck[my_starting_index:]), set(opponent_deck[opponent_starting_index:]), copy.deepcopy(visible_cards), depth)
+        am_i_p1 = 2 in my_deck
+        val, leaf = minimax(root, depth, am_i_p1)
+        
+        # find the next card to be played
+        path = leaf.get_path()
+        card_played = path[1].card_just_played
+        best_card_index = np.where(my_deck == card_played)[0]
+        return shift_element(my_deck, best_card_index, my_starting_index)
 
 
 def steal_and_place_cards(visible_cards, played_card, move_score, player):
@@ -151,14 +159,15 @@ def play_one_game_2(policy1, policy2, seed=None):
     for i in range(NUM_CARDS_PER_PLAYER):
         
         # this puts in position i the card that is chosen to be played
-        deck_p1 = choose_card_by_policy(deck_p1, policy1, i, visible_cards, current_player=1)
+        deck_p1 = choose_card_by_policy_2(deck_p1, deck_p2, policy1, i, i, visible_cards, current_player=1)
         # this actually picks the card
         card_p1 = deck_p1[i]
         move_score = best_score(visible_cards, result_card=card_p1, current_player=1)
         steal_and_place_cards(visible_cards, card_p1, move_score, 1)  
         score1 += move_score
 
-        deck_p2 = choose_card_by_policy(deck_p2, policy2, i, visible_cards, current_player=2)
+        # here opponent_starting_index is i+1 because p1 has already played his i-th card and the next he will play is the (i+1)-th
+        deck_p2 = choose_card_by_policy_2(deck_p2, deck_p1, policy2, i, i+1, visible_cards, current_player=2)
         card_p2 = deck_p2[i]
         move_score = best_score(visible_cards, result_card=card_p2, current_player=2)
         steal_and_place_cards(visible_cards, card_p2, move_score, 2)  

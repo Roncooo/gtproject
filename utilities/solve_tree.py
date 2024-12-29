@@ -5,7 +5,7 @@ from utilities.Stack import *
 import time
 
 
-def minimax(position, depth, alpha, beta, maximizingPlayer):
+def minimax(position, depth, maximizingPlayer, alpha=float('-inf'), beta=float('+inf')):
     if depth == 0 or not position.children:  # Check for leaf node or game over
         return position.delta_score, position
 
@@ -13,7 +13,7 @@ def minimax(position, depth, alpha, beta, maximizingPlayer):
         maxEval = float('-inf')
         bestLeaf = None
         for child in position.children:
-            eval, leaf = minimax(child, depth - 1, alpha, beta, False)
+            eval, leaf = minimax(child, depth - 1, False, alpha, beta)
             if eval > maxEval:
                 maxEval = eval
                 bestLeaf = leaf
@@ -26,7 +26,7 @@ def minimax(position, depth, alpha, beta, maximizingPlayer):
         minEval = float('+inf')
         bestLeaf = None
         for child in position.children:
-            eval, leaf = minimax(child, depth - 1, alpha, beta, True)
+            eval, leaf = minimax(child, depth - 1, True, alpha, beta)
             if eval < minEval:
                 minEval = eval
                 bestLeaf = leaf
@@ -44,7 +44,7 @@ def solve(current_node, depths, generate_tree_function):
         start = time.time()
 
         root = generate_tree_function(current_node.cards_player1, current_node.cards_player2, current_node.visible_cards,depth)
-        score, leaf_minimax = minimax(root, depth, float('-inf'), float('+inf'), True)
+        score, leaf_minimax = minimax(root, depth, True)
 
         current_node = leaf_minimax
         path = Node.get_path(leaf_minimax)

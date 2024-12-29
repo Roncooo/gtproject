@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from prettytable import PrettyTable
+
 # Useful to save some computation: this gives the answer in O(1)
 IS_PRIME = (
 True , True , False, True , False, 
@@ -114,3 +115,11 @@ def print_results(results, policies, show_scores=False):
         myTable.add_row(table_row)
     print("For each cell, win rate p1 (average score p1) | tie rate | win rate p2 (average score p2) | abs average score difference")
     print(myTable)
+
+
+def shift_element(array, from_index, to_index):
+    '''
+    returns a copy of array with the item in from_index positioned in to_index and the rest shifted to the right 
+    '''
+    temp = array[from_index]
+    return np.insert(np.delete(array, from_index), to_index, temp)

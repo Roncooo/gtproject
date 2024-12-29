@@ -50,6 +50,14 @@ The code is written in python. To run it, make sure to have all the dependencies
 
 # TODO
 
-* greedy random policy on the simulation (and then run the cross policy simulation for a bit)
+* run the cross policy simulation for a bit
 
-* understand if evaluate is needed or not in minimax
+* man vs cpu
+
+* rewrite README to explain game 1 and game 2 (in game 1 you choose always the best move and so we need best score)
+
+* compare minimax vs other policies
+
+* compare different results of minimax varying the depth (is it worth waiting?)
+
+* manage the odd depth in solve_tree.solve ??

@@ -1,4 +1,14 @@
 from utilities.policies import *
+import numpy as np
+
+def sort_deck_according_to_policy(policy, player_deck):
+    ''' Returns the array of cards sorted according to a policy '''
+    match policy:
+        case 'asc': return np.sort(player_deck)
+        case 'greedy_asc': return np.sort(player_deck)
+        case 'desc': return np.sort(player_deck)[::-1]
+        case 'greedy_desc': return np.sort(player_deck)[::-1]
+        case _: return player_deck
 
 def play_n_games(policy1, policy2, n_games, play_one_game_function, print_game_function, seed=None, log_game=False ):
     win_count_p1 = 0
@@ -29,7 +39,7 @@ def play_n_games(policy1, policy2, n_games, play_one_game_function, print_game_f
     avg_abs_score_diff = abs_score_diff / n_games
     return winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff
 
-def play_n_games_for_each_policy_combination(play_one_game_function, print_game_function, n_games=1000, policies=ALL_POLICIES, seed=None, log_game=False):
+def play_n_games_for_each_policy_combination(play_one_game_function, print_game_function, n_games=1000, policies=SIMPLE_POLICIES, seed=None, log_game=False):
     results = []
     for p1 in policies:
         row = []

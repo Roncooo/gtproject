@@ -27,3 +27,4 @@ if __name__ == "__main__":
             table.add_row([node.parent.current_player, node.card_just_played, [node.visible_cards[i].safe_top_just_for_print() for i in range(0,4)], node.delta_score, node.cards_player1, node.cards_player2])
     print(table)
     
+    
