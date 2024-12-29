@@ -1,5 +1,5 @@
-from Alphabeta_pruning.tree_primi_composti_1 import generate_tree_1
-from Alphabeta_pruning.tree_primi_composti_2 import generate_tree_2
+from Primi_composti_1.tree_primi_composti_1 import generate_tree_1
+from Primi_composti_2.tree_primi_composti_2 import generate_tree_2
 from utilities.Node import Node
 from utilities.Stack import *
 import time
@@ -36,18 +36,14 @@ def minimax(position, depth, alpha, beta, maximizingPlayer):
         return minEval, bestLeaf
 
 
-def resolve(current_node, depths):
+def solve(current_node, depths, generate_tree_function):
 
     all_paths = []
 
     for depth in depths:
         start = time.time()
 
-        if isinstance(current_node.visible_cards, list) and all(isinstance(x, Stack) for x in current_node.visible_cards):
-            root = generate_tree_2(current_node.cards_player1, current_node.cards_player2, current_node.visible_cards,depth)
-        else:
-            root = generate_tree_1(current_node.cards_player1, current_node.cards_player2, current_node.visible_cards,depth)
-
+        root = generate_tree_function(current_node.cards_player1, current_node.cards_player2, current_node.visible_cards,depth)
         score, leaf_minimax = minimax(root, depth, float('-inf'), float('+inf'), True)
 
         current_node = leaf_minimax

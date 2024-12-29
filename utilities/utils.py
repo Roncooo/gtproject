@@ -1,5 +1,6 @@
 import numpy as np
 import random
+from prettytable import PrettyTable
 # Useful to save some computation: this gives the answer in O(1)
 IS_PRIME = (
 True , True , False, True , False, 
@@ -81,6 +82,7 @@ def is_valid_operation(result: int, operand1: int, operand2: int):
 
 
 def set_initial_players_deck(seed_value):
+
     deck = np.linspace(start=LOWEST_CARD, stop=HIGHEST_CARD, num=NUMBER_OF_CARDS, dtype='int')
 
     if seed_value != None:
@@ -90,4 +92,25 @@ def set_initial_players_deck(seed_value):
     cards_p1 = set(deck[:NUM_CARDS_PER_PLAYER])
     cards_p2 = set(deck[NUM_CARDS_PER_PLAYER:])
 
+    # player1 is the first to play: according to the rules, he must have 2 in his deck
+    # if this is not the case i switch the decks
+    if 2 not in cards_p1:
+        cards_p1, cards_p2 = cards_p2, cards_p1
+
     return cards_p1, cards_p2
+
+
+def print_results(results, policies, show_scores=False):
+    myTable = PrettyTable(["P1\\P2"] + list(policies))
+    f = '05.2f'
+    for i, results_row in enumerate(results):
+        table_row = [policies[i]]
+        for result_cell in results_row:
+            win1, avg_score_1, ties, win2, avg_score_2, avg_abs_score_diff = result_cell
+            if show_scores:
+                table_row += [f"{(win1*100):{f}}% ({avg_score_1:{f}}) | {(ties*100):{f}}% | {(win2*100):{f}}% ({avg_score_2:{f}}) | {avg_abs_score_diff:{f}}"]
+            else:
+                table_row += [f"{(win1*100):{f}}% | {(ties*100):{f}}% | {(win2*100):{f}}% | {avg_abs_score_diff:{f}}"]
+        myTable.add_row(table_row)
+    print("For each cell, win rate p1 (average score p1) | tie rate | win rate p2 (average score p2) | abs average score difference")
+    print(myTable)

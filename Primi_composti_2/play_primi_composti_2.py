@@ -1,6 +1,3 @@
-import numpy as np
-import random
-from prettytable import PrettyTable 
 from utilities.Stack import Stack
 from utilities.utils import *
 from utilities.policies import *
@@ -123,22 +120,24 @@ def steal_and_place_cards(visible_cards, played_card, move_score, player):
     visible_cards[card_index].push(played_card)
 
 
-def play_one_game(policy1, policy2, seed=None):
+def play_one_game_2(policy1, policy2, seed=None):
     
     deck = np.linspace(start=2, stop=HIGHEST_CARD, num=NUMBER_OF_CARDS, dtype='int')
-    
+
     if seed != None:
         random.seed(seed)
-    
+
     random.shuffle(deck)
 
     deck_p1 = deck[:NUM_CARDS_PER_PLAYER]
     deck_p2 = deck[NUM_CARDS_PER_PLAYER:]
-    
+
     # player1 is the first to play: according to the rules, he must have 2 in his deck
     # if this is not the case i switch the decks
     if 2 not in deck_p1:
         deck_p1, deck_p2 = deck_p2, deck_p1
+
+    deck_p1, deck_p2
     
     # For predetermined policies, this sorting is all choose_card needs.
     # For dynamic policies, the sorting helps with the time complexity.
@@ -169,7 +168,7 @@ def play_one_game(policy1, policy2, seed=None):
     return score1, score2, deck_p1, deck_p2
 
 
-def print_game(deck_p1, deck_p2):
+def print_game_2(deck_p1, deck_p2):
     table = PrettyTable()
     table.field_names = ["Player", "Played card", "Gameboard", "Score P1", "Score P2", "Deck P1", "Deck P2"]
     table.border = False
@@ -198,57 +197,5 @@ def print_game(deck_p1, deck_p2):
 
     print(table)
 
-def play_n_games(policy1, policy2, n_games, seed=None, log_game=False):
-    win_count_p1 = 0
-    tie_count = 0
-    tot_score1 = 0
-    tot_score2 = 0
-    abs_score_diff = 0
-    
-    for _ in range(n_games):
-        score1, score2, deck_p1, deck_p2 = play_one_game(policy1, policy2, seed)
-        if score1 > score2:
-            win_count_p1 += 1
-        if score1 == score2:
-            tie_count +=1
-        tot_score1 += score1
-        tot_score2 += score2
-        abs_score_diff += abs(score1-score2)
-        if log_game:
-            print(f"Game: {policy1} vs {policy2}")
-            print_game(deck_p1, deck_p2)
-    
-    win_count_p2 = n_games-tie_count-win_count_p1
-    winrate_p1 = win_count_p1 / n_games
-    winrate_p2 = win_count_p2 / n_games
-    tierate = tie_count / n_games
-    avg_score_1 = tot_score1 / n_games
-    avg_score_2 = tot_score2 / n_games
-    avg_abs_score_diff = abs_score_diff / n_games
-    return winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff
 
 
-def play_n_games_for_each_policy_combination(n_games=1000, policies=ALL_POLICIES, seed=None, log_game=False):
-    results = []
-    for p1 in policies:
-        row = []
-        for p2 in policies:
-            winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff = play_n_games(p1, p2, n_games, seed, log_game)
-            row += [[winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff]]
-        results += [row]
-    return results
-        
-def print_results(results, policies, show_scores=False):
-    myTable = PrettyTable(["P1\\P2"] + list(policies))
-    f = '05.2f'
-    for i, results_row in enumerate(results):
-        table_row = [policies[i]]
-        for result_cell in results_row:
-            win1, avg_score_1, ties, win2, avg_score_2, avg_abs_score_diff = result_cell
-            if show_scores:
-                table_row += [f"{(win1*100):{f}}% ({avg_score_1:{f}}) | {(ties*100):{f}}% | {(win2*100):{f}}% ({avg_score_2:{f}}) | {avg_abs_score_diff:{f}}"]
-            else:
-                table_row += [f"{(win1*100):{f}}% | {(ties*100):{f}}% | {(win2*100):{f}}% | {avg_abs_score_diff:{f}}"]
-        myTable.add_row(table_row)
-    print("For each cell, win rate p1 (average score p1) | tie rate | win rate p2 (average score p2) | abs average score difference")
-    print(myTable)
