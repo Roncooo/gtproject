@@ -83,15 +83,15 @@ def is_valid_operation(result: int, operand1: int, operand2: int):
 
 
 def set_initial_players_deck(seed_value):
-
+    ''' returns deck_p1 and deck_p2 as numpy arrays '''
     deck = np.linspace(start=LOWEST_CARD, stop=HIGHEST_CARD, num=NUMBER_OF_CARDS, dtype='int')
 
     if seed_value != None:
         random.seed(seed_value)
 
     random.shuffle(deck)
-    cards_p1 = set(deck[:NUM_CARDS_PER_PLAYER])
-    cards_p2 = set(deck[NUM_CARDS_PER_PLAYER:])
+    cards_p1 = deck[:NUM_CARDS_PER_PLAYER]
+    cards_p2 = deck[NUM_CARDS_PER_PLAYER:]
 
     # player1 is the first to play: according to the rules, he must have 2 in his deck
     # if this is not the case i switch the decks
@@ -116,10 +116,11 @@ def print_results(results, policies, show_scores=False):
     print("For each cell, win rate p1 (average score p1) | tie rate | win rate p2 (average score p2) | abs average score difference")
     print(myTable)
 
-
-def shift_element(array, from_index, to_index):
-    '''
-    returns a copy of array with the item in from_index positioned in to_index and the rest shifted to the right 
-    '''
+def shift_element(array: np.ndarray, from_index: int, to_index: int):
+    ''' returns a copy of `array` with the item in `from_index` positioned in `to_index` and the rest shifted to the right. '''
     temp = array[from_index]
     return np.insert(np.delete(array, from_index), to_index, temp)
+
+def remove(arr: np.ndarray, value):
+    ''' returns a copy of `arr` after removing all the occurrences of `value` '''
+    return np.delete(arr, np.where(arr==value))

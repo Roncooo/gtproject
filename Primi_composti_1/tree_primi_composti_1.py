@@ -1,9 +1,9 @@
 from utilities.Node import Node
 from utilities.utils import *
-from play_primi_composti_1 import best_score
+from Primi_composti_1.score import best_score
 
 def place_card(visible_cards, new_card, player):
-    new_gameboard = visible_cards[:]
+    new_gameboard = visible_cards.copy()
     if player == 1:
         if is_prime(new_card):
             new_gameboard[0] = new_card
@@ -16,8 +16,8 @@ def place_card(visible_cards, new_card, player):
             new_gameboard[3] = new_card
     return new_gameboard
 
-def generate_tree_1(cards_p1, cards_p2, table_cards, depth):
-    root = Node(cards_p1, cards_p2, visible_cards=table_cards)
+def generate_tree_1(cards_p1: np.ndarray, cards_p2: np.ndarray, visible_cards: list, depth: int):
+    root = Node(cards_p1, cards_p2, visible_cards=visible_cards)
 
     def expand(node: Node, depth):
         if depth == 0:
@@ -26,8 +26,7 @@ def generate_tree_1(cards_p1, cards_p2, table_cards, depth):
             for c in node.cards_player1:
                 this_move_score = best_score(node.visible_cards, c)
                 new_delta_score = node.delta_score + this_move_score
-                cards_player1_copy = node.cards_player1.copy()
-                cards_player1_copy.remove(c)
+                cards_player1_copy = remove(node.cards_player1, c)
                 new_node = Node(cards_player1_copy, node.cards_player2,
                                 current_player=2,
                                 delta_score=new_delta_score,
@@ -41,8 +40,7 @@ def generate_tree_1(cards_p1, cards_p2, table_cards, depth):
             for c in node.cards_player2:
                 this_move_score = best_score(node.visible_cards, c)
                 new_delta_score = node.delta_score - this_move_score
-                cards_player2_copy = node.cards_player2.copy()
-                cards_player2_copy.remove(c)
+                cards_player2_copy = remove(node.cards_player2, c)
                 new_node = Node(node.cards_player1, cards_player2_copy,
                                 current_player=1,
                                 delta_score=new_delta_score,

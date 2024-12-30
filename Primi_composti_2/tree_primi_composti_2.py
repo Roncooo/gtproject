@@ -42,8 +42,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     new_visible_cards[1].push(new_visible_cards[3].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
-                    cards_player1_copy = copy.deepcopy(node.cards_player1)
-                    cards_player1_copy.remove(c)
+                    cards_player1_copy = remove(node.cards_player1, c)
                     new_node = Node(cards_player1_copy, node.cards_player2,
                                 current_player=2,
                                 delta_score=new_delta,
@@ -63,8 +62,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     new_visible_cards[0].push(new_visible_cards[2].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
-                    cards_player1_copy = copy.deepcopy(node.cards_player1)
-                    cards_player1_copy.remove(c)
+                    cards_player1_copy = remove(node.cards_player1, c)
                     new_node = Node(cards_player1_copy, node.cards_player2,
                                 current_player=2,
                                 delta_score=new_delta,
@@ -84,8 +82,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     new_visible_cards[1].push(new_visible_cards[3].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
-                    cards_player1_copy = copy.deepcopy(node.cards_player1)
-                    cards_player1_copy.remove(c)
+                    cards_player1_copy = remove(node.cards_player1, c)
                     new_node = Node(cards_player1_copy, node.cards_player2,
                                 current_player=2,
                                 delta_score=new_delta,
@@ -101,8 +98,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     new_visible_cards = copy.deepcopy(node.visible_cards)
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
-                    cards_player1_copy = copy.deepcopy(node.cards_player1)
-                    cards_player1_copy.remove(c)
+                    cards_player1_copy = remove(node.cards_player1, c)
                     new_node = Node(cards_player1_copy, node.cards_player2,
                                 current_player=2,
                                 delta_score=new_delta,
@@ -131,8 +127,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     new_visible_cards[3].push(new_visible_cards[1].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
-                    cards_player2_copy = copy.deepcopy(node.cards_player2)
-                    cards_player2_copy.remove(c)
+                    cards_player2_copy = remove(node.cards_player2, c)
                     new_node = Node(node.cards_player1, cards_player2_copy,
                                 current_player=1,
                                 delta_score=new_delta,
@@ -152,8 +147,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     new_visible_cards[2].push(new_visible_cards[0].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
-                    cards_player2_copy = copy.deepcopy(node.cards_player2)
-                    cards_player2_copy.remove(c)
+                    cards_player2_copy = remove(node.cards_player2, c)
                     new_node = Node(node.cards_player1, cards_player2_copy,
                                 current_player=1,
                                 delta_score=new_delta,
@@ -173,8 +167,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     new_visible_cards[3].push(new_visible_cards[1].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
-                    cards_player2_copy = copy.deepcopy(node.cards_player2)
-                    cards_player2_copy.remove(c)
+                    cards_player2_copy = remove(node.cards_player2, c)
                     new_node = Node(node.cards_player1, cards_player2_copy,
                                 current_player=1,
                                 delta_score=new_delta,
@@ -190,8 +183,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     new_visible_cards = copy.deepcopy(node.visible_cards)
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
-                    cards_player2_copy = copy.deepcopy(node.cards_player2)
-                    cards_player2_copy.remove(c)
+                    cards_player2_copy = remove(node.cards_player2, c)
                     new_node = Node(node.cards_player1, cards_player2_copy,
                                 current_player=1,
                                 delta_score=new_delta,

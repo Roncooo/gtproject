@@ -4,8 +4,8 @@ from utilities.Node import Node
 from utilities.Stack import *
 import time
 
-
-def minimax(position, depth, maximizingPlayer, alpha=float('-inf'), beta=float('+inf')):
+def minimax(position: Node, depth: int, maximizingPlayer: bool, alpha=float('-inf'), beta=float('+inf')):
+    
     if depth == 0 or not position.children:  # Check for leaf node or game over
         return position.delta_score, position
 

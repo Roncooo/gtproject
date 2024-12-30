@@ -100,7 +100,7 @@ def choose_card_by_policy_2(my_deck, opponent_deck, policy, my_starting_index, o
     if policy in MINIMAX_POLICIES:
         # minimax policies only have depths that are one digit values and so i can take the last char and convert it to int
         depth = int(policy[-1])
-        root = generate_tree_2(set(my_deck[my_starting_index:]), set(opponent_deck[opponent_starting_index:]), copy.deepcopy(visible_cards), depth)
+        root = generate_tree_2(my_deck[my_starting_index:], opponent_deck[opponent_starting_index:], copy.deepcopy(visible_cards), depth)
         am_i_p1 = 2 in my_deck
         val, leaf = minimax(root, depth, am_i_p1)
         
@@ -129,22 +129,8 @@ def steal_and_place_cards(visible_cards, played_card, move_score, player):
 
 
 def play_one_game_2(policy1, policy2, seed=None):
-    
-    deck = np.linspace(start=2, stop=HIGHEST_CARD, num=NUMBER_OF_CARDS, dtype='int')
 
-    if seed != None:
-        random.seed(seed)
-
-    random.shuffle(deck)
-
-    deck_p1 = deck[:NUM_CARDS_PER_PLAYER]
-    deck_p2 = deck[NUM_CARDS_PER_PLAYER:]
-
-    # player1 is the first to play: according to the rules, he must have 2 in his deck
-    # if this is not the case i switch the decks
-    if 2 not in deck_p1:
-        deck_p1, deck_p2 = deck_p2, deck_p1
-
+    deck_p1, deck_p2 = set_initial_players_deck(seed)
     
     # For predetermined policies, this sorting is all choose_card needs.
     # For dynamic policies, the sorting helps with the time complexity.
