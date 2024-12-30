@@ -1,3 +1,6 @@
+import numpy as np
+from typing import List
+
 class Stack:
     '''
     Apparently Pyhton does not have a built-in or library made stack with the top operation
@@ -27,3 +30,9 @@ class Stack:
         return len(self.stack)
     def __str__(self):
         return str(self.stack) if self.stack else "[]"
+    
+def show_visible_cards(arr):
+    ''' `arr` is an array of exactly 4 `Stack`s. This functions teturns in a nice format, a string with the topmost element of each stack in `arr`. '''
+    assert(len(arr)==4)
+    assert(all(isinstance(x, Stack)) for x in arr)
+    return '[' + " ".join("_" if x == 0 else str(x.safe_top_just_for_print()) for x in arr) + ']'

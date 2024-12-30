@@ -3,7 +3,7 @@ from utilities.policies import *
 from utilities.simulations import sort_deck_according_to_policy
 from Primi_composti_1.tree_primi_composti_1 import generate_tree_1
 from utilities.solve_tree import minimax
-from Primi_composti_1.score import best_score
+from Primi_composti_1.score import best_score_1
 
 def place_card_index(card, player_number):
     ''' Tells on which index (in [0,3]) to place a card '''
@@ -27,7 +27,7 @@ def choose_card_by_policy_1(my_deck, opponent_deck, policy, my_starting_index, o
         # I only look at cards from position `starting_index` to the end of the deck because those in positions [0:starting_index] are already played
         for i, card in enumerate(my_deck[my_starting_index:]):
             # suppose I want to place this card, I would obtain
-            this_score = best_score(visible_cards=visible_cards, result_card=card)
+            this_score = best_score_1(visible_cards=visible_cards, result_card=card)
             if this_score > current_high_score:
                 current_high_score = this_score
                 best_card_index = i + my_starting_index
@@ -77,7 +77,7 @@ def play_one_game_1(policy1, policy2, seed=None):
         # this actually picks the card
         card1 = deck_p1[i]
         card_index = place_card_index(card1, player_number=1)
-        score1 += best_score(visible_cards, result_card=card1)
+        score1 += best_score_1(visible_cards, result_card=card1)
         # places the card in the table
         visible_cards[card_index] = card1
 
@@ -85,7 +85,7 @@ def play_one_game_1(policy1, policy2, seed=None):
         deck_p2 = choose_card_by_policy_1(deck_p2, deck_p1, policy2, my_starting_index=i, opponent_starting_index=i+1, visible_cards=visible_cards, current_player=2)
         card2 = deck_p2[i]
         card_index = place_card_index(card2, player_number=2)
-        score2 += best_score(visible_cards, result_card=card2)
+        score2 += best_score_1(visible_cards, result_card=card2)
         visible_cards[card_index] = card2
 
     return score1, score2, deck_p1, deck_p2
@@ -105,7 +105,7 @@ def print_game_1(deck_p1, deck_p2):
     for i in range(NUM_CARDS_PER_PLAYER):
         card_p1, card_p2 = deck_p1[i], deck_p2[i] 
         
-        score1 += best_score(visible_cards, result_card=card_p1)
+        score1 += best_score_1(visible_cards, result_card=card_p1)
         card_index = place_card_index(card_p1, player_number=1)
         visible_cards[card_index] = card_p1
         show_visible_cards = '[' + " ".join("_" if x == 0 else str(x) for x in visible_cards) + ']'
@@ -113,7 +113,7 @@ def print_game_1(deck_p1, deck_p2):
         table.add_row([1, card_p1, show_visible_cards, score1, score2, deck_p1[i+1:], deck_p2[i:]])
 
         show_visible_cards = '[' + " ".join("_" if x == 0 else str(x) for x in visible_cards) + ']'
-        score2 += best_score(visible_cards, result_card=card_p2)
+        score2 += best_score_1(visible_cards, result_card=card_p2)
         card_index = place_card_index(card_p2, player_number=2)
         visible_cards[card_index] = card_p2
         table.add_row([2, card_p2, show_visible_cards, score1, score2, deck_p1[i+1:], deck_p2[i+1:]])

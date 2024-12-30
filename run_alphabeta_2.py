@@ -24,7 +24,7 @@ if __name__ == "__main__":
     for i, path in enumerate(all_paths):
         table.add_row([""]*len(table.field_names))
         for node in path[1:]:
-            table.add_row([node.parent.current_player, node.card_just_played, [node.visible_cards[i].safe_top_just_for_print() for i in range(0,4)], node.delta_score, node.cards_player1, node.cards_player2])
+            table.add_row([node.parent.current_player, node.card_just_played, show_visible_cards(node.visible_cards), node.delta_score, node.cards_player1, node.cards_player2])
     print(table)
     
     

@@ -1,4 +1,4 @@
-from utilities.Stack import Stack
+from utilities.Stack import Stack, show_visible_cards
 from utilities.utils import *
 from utilities.policies import *
 from utilities.simulations import sort_deck_according_to_policy
@@ -6,7 +6,7 @@ import copy
 from utilities.solve_tree import minimax
 from Primi_composti_2.tree_primi_composti_2 import generate_tree_2
 
-def best_score(visible_cards, result_card, current_player):
+def best_score_2(visible_cards, result_card, current_player):
     '''
     Gives the best score you can obtain by combining 2 cards among `visible_cards` to obtain `result`, possibly stealing cards from the opponent. This changes the system of points. 
     Tries all possible combinations of operands and operations.
@@ -81,7 +81,7 @@ def choose_card_by_policy_2(my_deck, opponent_deck, policy, my_starting_index, o
         # I only look at cards from position `my_starting_index` to the end of the deck because those in positions [0:my_starting_index] are already played
         for i, card in enumerate(my_deck[my_starting_index:]):
             # suppose I want to place this card, I would obtain
-            this_score = best_score(visible_cards=visible_cards, result_card=card, current_player=current_player)
+            this_score = best_score_2(visible_cards=visible_cards, result_card=card, current_player=current_player)
             if this_score > current_high_score:
                 current_high_score = this_score
                 best_card_index = i + my_starting_index
@@ -127,6 +127,12 @@ def steal_and_place_cards(visible_cards, played_card, move_score, player):
     card_index = place_card_index(played_card, player)
     visible_cards[card_index].push(played_card)
 
+def current_scores(visible_cards):
+    ''' In the version 2 of the game, scores rely on the number of cards in the stacks on the table. 
+    Each move may change both scores so it's not enough to sum the scores made by one player to get his final score. '''
+    score_p1 = PRIME_SCORE * visible_cards[0].size() + COMPOSITE_SCORE * visible_cards[1].size()
+    score_p2 = PRIME_SCORE * visible_cards[2].size() + COMPOSITE_SCORE * visible_cards[3].size()
+    return score_p1, score_p2
 
 def play_one_game_2(policy1, policy2, seed=None):
 
@@ -148,16 +154,16 @@ def play_one_game_2(policy1, policy2, seed=None):
         deck_p1 = choose_card_by_policy_2(deck_p1, deck_p2, policy1, i, i, visible_cards, current_player=1)
         # this actually picks the card
         card_p1 = deck_p1[i]
-        move_score = best_score(visible_cards, result_card=card_p1, current_player=1)
-        steal_and_place_cards(visible_cards, card_p1, move_score, 1)  
-        score1 += move_score
+        move_score = best_score_2(visible_cards, result_card=card_p1, current_player=1)
+        steal_and_place_cards(visible_cards, card_p1, move_score, 1)
 
         # here opponent_starting_index is i+1 because p1 has already played his i-th card and the next he will play is the (i+1)-th
         deck_p2 = choose_card_by_policy_2(deck_p2, deck_p1, policy2, i, i+1, visible_cards, current_player=2)
         card_p2 = deck_p2[i]
-        move_score = best_score(visible_cards, result_card=card_p2, current_player=2)
-        steal_and_place_cards(visible_cards, card_p2, move_score, 2)  
-        score2 += move_score 
+        move_score = best_score_2(visible_cards, result_card=card_p2, current_player=2)
+        steal_and_place_cards(visible_cards, card_p2, move_score, 2)
+    
+    score1, score2 = current_scores(visible_cards)
 
     return score1, score2, deck_p1, deck_p2
 
@@ -176,18 +182,16 @@ def print_game_2(deck_p1, deck_p2):
     for i in range(NUM_CARDS_PER_PLAYER):
         card_p1, card_p2 = deck_p1[i], deck_p2[i] 
         
-        move_score = best_score(visible_cards, result_card=card_p1, current_player=1)
+        move_score = best_score_2(visible_cards, result_card=card_p1, current_player=1)
         steal_and_place_cards(visible_cards, card_p1, move_score, 1)  
         score1 += move_score
-        show_visible_cards = '[' + " ".join("_" if x == 0 else str(x.safe_top_just_for_print()) for x in visible_cards) + ']'
         # here deck_p2[i:] is needed (without +1) because otherwise we would show as if P2 already played his move
-        table.add_row([1, card_p1, show_visible_cards, score1, score2, deck_p1[i+1:], deck_p2[i:]])
+        table.add_row([1, card_p1, show_visible_cards(visible_cards), score1, score2, deck_p1[i+1:], deck_p2[i:]])
 
-        move_score = best_score(visible_cards, result_card=card_p2, current_player=2)
+        move_score = best_score_2(visible_cards, result_card=card_p2, current_player=2)
         steal_and_place_cards(visible_cards, card_p2, move_score, 2)  
         score2 += move_score
-        show_visible_cards = '[' + " ".join("_" if x == 0 else str(x.safe_top_just_for_print()) for x in visible_cards) + ']'
-        table.add_row([2, card_p2, show_visible_cards, score1, score2, deck_p1[i+1:], deck_p2[i+1:]])
+        table.add_row([2, card_p2, show_visible_cards(visible_cards), score1, score2, deck_p1[i+1:], deck_p2[i+1:]])
 
     print(table)
 

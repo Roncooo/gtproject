@@ -1,6 +1,6 @@
 from utilities.utils import PRIME_SCORE, COMPOSITE_SCORE, card_score, is_valid_operation, is_prime_index
 
-def best_score(visible_cards, result_card):    
+def best_score_1(visible_cards, result_card):    
     '''
     Gives the best score you can obtain by combining 2 cards among `visible_cards` to obtain `result`.
     Tries all possible combinations of operands and operations.

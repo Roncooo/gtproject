@@ -1,9 +1,9 @@
 from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck, place_card_index, shift_element
 from utilities.policies import ALL_POLICIES
 import numpy as np
-from Primi_composti_1.score import best_score_1
-from Primi_composti_1.play_primi_composti_1 import choose_card_by_policy_1
+from Primi_composti_2.play_primi_composti_2 import choose_card_by_policy_2, steal_and_place_cards, current_scores, best_score_2
 from utilities.simulations import sort_deck_according_to_policy
+from utilities.Stack import Stack, show_visible_cards
 
 def ask_player():
     ''' Asks the user the number of player he wants to play as. Returns 1 or 2 according to user answer. '''
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     seed = 31
     # here cards_p1 and cards_p2 are ndarrays used as in play_primi_composti_1
     cards_p1, cards_p2 = set_initial_players_deck(seed)
-    visible_cards = np.zeros(4, dtype='int')
+    visible_cards = [Stack(), Stack(), Stack(), Stack()]
     human_score = cpu_score = 0
     
     human_player = ask_player()
@@ -60,28 +60,27 @@ if __name__ == '__main__':
         
         for i in range(NUM_CARDS_PER_PLAYER):
             
-            print(f"The visible cards are {visible_cards}")
+            print(f"The visible cards are {show_visible_cards(visible_cards)}")
             # print(f"CPU cards are {cards_p2}")
             card = ask_card(cards_p1[i:])
-            score = best_score_1(visible_cards, card)
-            human_score += score
-            print(f"You made {score} points, you now have {human_score} points")
             # move the card in the correct spot of your deck
             card_deck_index = np.where(cards_p1==card)[0]
             cards_p1 = shift_element(cards_p1, card_deck_index, i)
             # place the card on the table
-            card_placement_index = place_card_index(card, 1)
-            visible_cards[card_placement_index] = card
-            print(f"Now the visible cards are {visible_cards} and your deck {cards_p1[i+1:]}")
+            move_score = best_score_2(visible_cards, card, current_player=1)
+            steal_and_place_cards(visible_cards, card, move_score, player=1)
+            print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p1[i+1:]}")
+            human_score, cpu_score = current_scores(visible_cards)
+            print(f"Scores are now: human {human_score} - CPU {cpu_score}")
             
-            cards_p2 = choose_card_by_policy_1(cards_p2, cards_p1, cpu_policy, i, i+1, visible_cards, 2)
+            cards_p2 = choose_card_by_policy_2(cards_p2, cards_p1, cpu_policy, i, i+1, visible_cards, 2)
             card = cards_p2[i]
-            score = best_score_1(visible_cards, card)
-            cpu_score += score
-            print(f"The CPU chose card {card} and made {score} points, now it has {cpu_score} points")            
+            print(f"The CPU chose card {card}")
             # place the card on the table
-            card_placement_index = place_card_index(card, 2)
-            visible_cards[card_placement_index] = card
+            move_score = best_score_2(visible_cards, card, current_player=2)
+            steal_and_place_cards(visible_cards, card, move_score, player=2)
+            human_score, cpu_score = current_scores(visible_cards)
+            print(f"Scores are now: human {human_score} - CPU {cpu_score}")
             # print(f"Now the visible cards are {visible_cards}")
         
         print("\nGAME OVER\n")
@@ -101,29 +100,29 @@ if __name__ == '__main__':
         
         for i in range(NUM_CARDS_PER_PLAYER):
             
-            cards_p1 = choose_card_by_policy_1(cards_p1, cards_p2, cpu_policy, i, i, visible_cards, 1)
+            cards_p1 = choose_card_by_policy_2(cards_p1, cards_p2, cpu_policy, i, i, visible_cards, 1)
             card = cards_p1[i]
-            score = best_score_1(visible_cards, card)
-            cpu_score += score
-            print(f"The CPU chose card {card} and made {score} points, now it has {cpu_score} points")            
+            print(f"The CPU chose card {card}")
             # place the card on the table
-            card_placement_index = place_card_index(card, 1)
-            visible_cards[card_placement_index] = card
+            move_score = best_score_2(visible_cards, card, current_player=1)
+            steal_and_place_cards(visible_cards, card, move_score, player=1)
+            human_score, cpu_score = current_scores(visible_cards)
+            print(f"Scores are now: human {human_score} - CPU {cpu_score}")           
             # print(f"Now the visible cards are {visible_cards}")
 
-            print(f"The visible cards are {visible_cards}")
+            print(f"The visible cards are {show_visible_cards(visible_cards)}")
             # print(f"CPU cards are {cards_p1}")
             card = ask_card(cards_p2[i:])
-            score = best_score_1(visible_cards, card)
-            human_score += score
-            print(f"You made {score} points, you now have {human_score} points")
             # move the card in the correct spot of your deck
             card_deck_index = np.where(cards_p2==card)[0]
             cards_p2 = shift_element(cards_p2, card_deck_index, i)
             # place the card on the table
-            card_placement_index = place_card_index(card, 2)
-            visible_cards[card_placement_index] = card
-            print(f"Now the visible cards are {visible_cards} and your deck {cards_p2[i+1:]}")
+            move_score = best_score_2(visible_cards, card, current_player=2)
+            steal_and_place_cards(visible_cards, card, move_score, player=2)
+            print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p2[i+1:]}")
+            human_score, cpu_score = current_scores(visible_cards)
+            print(f"Scores are now: human {human_score} - CPU {cpu_score}")   
+            
         
         print("\nGAME OVER\n")
         print(f"Results: your score {human_score}, cpu score {cpu_score}")

@@ -1,6 +1,6 @@
 from utilities.Node import Node
 from utilities.utils import *
-from Primi_composti_1.score import best_score
+from Primi_composti_1.score import best_score_1
 
 def place_card(visible_cards, new_card, player):
     new_gameboard = visible_cards.copy()
@@ -24,7 +24,7 @@ def generate_tree_1(cards_p1: np.ndarray, cards_p2: np.ndarray, visible_cards: l
             return
         if node.current_player == 1:
             for c in node.cards_player1:
-                this_move_score = best_score(node.visible_cards, c)
+                this_move_score = best_score_1(node.visible_cards, c)
                 new_delta_score = node.delta_score + this_move_score
                 cards_player1_copy = remove(node.cards_player1, c)
                 new_node = Node(cards_player1_copy, node.cards_player2,
@@ -38,7 +38,7 @@ def generate_tree_1(cards_p1: np.ndarray, cards_p2: np.ndarray, visible_cards: l
                 expand(new_node, depth - 1)
         else:
             for c in node.cards_player2:
-                this_move_score = best_score(node.visible_cards, c)
+                this_move_score = best_score_1(node.visible_cards, c)
                 new_delta_score = node.delta_score - this_move_score
                 cards_player2_copy = remove(node.cards_player2, c)
                 new_node = Node(node.cards_player1, cards_player2_copy,
