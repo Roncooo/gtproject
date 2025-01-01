@@ -2,6 +2,8 @@ import numpy as np
 import random
 from prettytable import PrettyTable
 
+from utilities.Stack import Stack
+
 # Useful to save some computation: this gives the answer in O(1)
 IS_PRIME = (
 True , True , False, True , False, 
@@ -124,3 +126,11 @@ def shift_element(array: np.ndarray, from_index: int, to_index: int):
 def remove(arr: np.ndarray, value):
     ''' returns a copy of `arr` after removing all the occurrences of `value` '''
     return np.delete(arr, np.where(arr==value))
+
+def show_visible_cards(arr):
+    ''' `arr` is an array of exactly 4 `Stack`s or exactly 4 `int`s. This functions teturns in a nice format, a string with the topmost element of each stack in `arr` or the value of the integer numbers. '''
+    assert(len(arr)==4)
+    if all(isinstance(x, Stack) for x in arr):
+        return '[' + " ".join("_" if x == 0 else str(x.safe_top_just_for_print()) for x in arr) + ']'
+    elif all(isinstance(x, int) or isinstance(x, np.int64) or isinstance(x, np.int32) for x in arr):
+        return '[' + " ".join("_" if x == 0 else str(x) for x in arr) + ']'

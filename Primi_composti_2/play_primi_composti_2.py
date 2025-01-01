@@ -1,4 +1,4 @@
-from utilities.Stack import Stack, show_visible_cards
+from utilities.Stack import Stack
 from utilities.utils import *
 from utilities.policies import *
 from utilities.simulations import sort_deck_according_to_policy
