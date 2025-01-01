@@ -87,7 +87,7 @@ if __name__ == '__main__':
         for i in range(NUM_CARDS_PER_PLAYER):
 
             # Human turn
-            cards_p1, visible_cards = turn('human', cards_p1, visible_cards, human_score, i, i, player_num=1)
+            cards_p1, visible_cards = turn('human', cards_p1, visible_cards, i, i, player_num=1)
             human_score, cpu_score = current_scores(visible_cards)
             print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p1[i + 1:]} ")
             print(f"Scores are now: human {human_score} - CPU {cpu_score} \n")
