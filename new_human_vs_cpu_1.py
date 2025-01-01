@@ -1,4 +1,4 @@
-from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck, place_card_index, shift_element
+from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck, place_card_index, shift_element, show_visible_cards
 from utilities.policies import ALL_POLICIES
 import numpy as np
 from Primi_composti_1.score import best_score_1
@@ -88,7 +88,7 @@ if __name__ == '__main__':
         for i in range(NUM_CARDS_PER_PLAYER):
             # Human turn
             cards_p1, visible_cards, human_score = turn('human', cards_p1, visible_cards, human_score, i, i, player_num=1)
-            print(f"Now the visible cards are {visible_cards} and your deck {cards_p1[i + 1:]} \n")
+            print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p1[i + 1:]} \n")
             # CPU turn
             cards_p2, visible_cards, cpu_score = turn('cpu', cards_p2, visible_cards, cpu_score,  i, i+1,  cpu_policy=cpu_policy , opponent_deck=cards_p1,  player_num=2)
 
@@ -101,7 +101,7 @@ if __name__ == '__main__':
             cards_p1, visible_cards, cpu_score = turn( 'cpu', cards_p1, visible_cards, cpu_score, i, i, cpu_policy=cpu_policy , opponent_deck=cards_p2, player_num=1)
             # Human turn
             cards_p2, visible_cards, human_score = turn('human', cards_p2, visible_cards, human_score, i, player_num=2)
-            print(f"Now the visible cards are {visible_cards} and your deck {cards_p2[i + 1:]} \n")
+            print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p2[i + 1:]} \n")
 
 
     print("\nGAME OVER\n")

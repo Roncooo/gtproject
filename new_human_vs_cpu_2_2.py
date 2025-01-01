@@ -1,10 +1,10 @@
-from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck, place_card_index, shift_element, card_score
+from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck, place_card_index, shift_element, card_score, show_visible_cards
 from utilities.policies import ALL_POLICIES
 import numpy as np
 from Primi_composti_2.play_primi_composti_2 import choose_card_by_policy_2, steal_and_place_cards, current_scores, \
     best_score_2, find_stolen_card_indexes
 from utilities.simulations import sort_deck_according_to_policy
-from utilities.Stack import Stack, show_visible_cards
+from utilities.Stack import Stack
 
 def ask_player():
     ''' Asks the user the number of player he wants to play as. Returns 1 or 2 according to user answer. '''
