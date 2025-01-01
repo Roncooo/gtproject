@@ -41,7 +41,7 @@ def ask_card(human_deck):
             print(f"{card} is not a valid card in you deck, please try again.")
 
 
-def turn(player_type, current_player_deck, visible_cards, score, player_starting_index, opponent_starting_index = None , cpu_policy=None, opponent_deck=None, player_num=1):
+def turn(player_type, current_player_deck, visible_cards, player_starting_index, opponent_starting_index = None , cpu_policy=None, opponent_deck=None, player_num=1):
     """Handles a single turn for a player: human or cpu.
     """
 
@@ -64,7 +64,7 @@ def turn(player_type, current_player_deck, visible_cards, score, player_starting
     move_score = best_score_2(visible_cards, card, current_player=player_num)
     steal_and_place_cards(visible_cards, card, move_score, player=player_num)
 
-    return current_player_deck, visible_cards, score
+    return current_player_deck, visible_cards
 
 if __name__ == '__main__':
     
@@ -87,13 +87,13 @@ if __name__ == '__main__':
         for i in range(NUM_CARDS_PER_PLAYER):
 
             # Human turn
-            cards_p1, visible_cards, human_score = turn('human', cards_p1, visible_cards, human_score, i, i, player_num=1)
+            cards_p1, visible_cards = turn('human', cards_p1, visible_cards, human_score, i, i, player_num=1)
             human_score, cpu_score = current_scores(visible_cards)
             print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p1[i + 1:]} ")
             print(f"Scores are now: human {human_score} - CPU {cpu_score} \n")
 
             # CPU turn
-            cards_p2, visible_cards, cpu_score = turn('cpu', cards_p2, visible_cards, cpu_score,  i, i+1,  cpu_policy=cpu_policy , opponent_deck=cards_p1,  player_num=2)
+            cards_p2, visible_cards = turn('cpu', cards_p2, visible_cards, i, i+1,  cpu_policy=cpu_policy , opponent_deck=cards_p1,  player_num=2)
             human_score, cpu_score = current_scores(visible_cards)
             print(f"Scores are now: human {human_score} - CPU {cpu_score} \n")
 
@@ -106,12 +106,12 @@ if __name__ == '__main__':
         for i in range(NUM_CARDS_PER_PLAYER):
 
             # CPU turn
-            cards_p1, visible_cards, cpu_score = turn('cpu', cards_p1, visible_cards, cpu_score, i, i,cpu_policy=cpu_policy, opponent_deck=cards_p2, player_num=1)
+            cards_p1, visible_cards = turn('cpu', cards_p1, visible_cards, i, i, cpu_policy=cpu_policy, opponent_deck=cards_p2, player_num=1)
             human_score, cpu_score = current_scores(visible_cards)
             print(f"Scores are now: human {human_score} - CPU {cpu_score}\n")
 
             # Human turn
-            cards_p2, visible_cards, human_score = turn('human', cards_p2, visible_cards, human_score, i, player_num=2)
+            cards_p2, visible_cards = turn('human', cards_p2, visible_cards, i, player_num=2)
             human_score, cpu_score = current_scores(visible_cards)
             print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p2[i + 1:]} ")
             print(f"Scores are now: human {human_score} - CPU {cpu_score} \n")

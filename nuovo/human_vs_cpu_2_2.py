@@ -60,9 +60,9 @@ def ask_steal(visible_cards, played_card, move_score, player):
     while True:
         ans = input(prompt)
         if ans.lower() in valid_positive_answers:
-            return 1
+            return True
         if ans.lower() in valid_negative_answers:
-            return 2
+            return False
         print(f"{ans} is not a valid answer, please retry")
 
 def turn(player_type, current_player_deck, visible_cards, score, player_starting_index, opponent_starting_index = None , cpu_policy=None, opponent_deck=None, player_num=1):
