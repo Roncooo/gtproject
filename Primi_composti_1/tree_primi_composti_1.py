@@ -16,8 +16,8 @@ def place_card(visible_cards, new_card, player):
             new_gameboard[3] = new_card
     return new_gameboard
 
-def generate_tree_1(cards_p1: np.ndarray, cards_p2: np.ndarray, visible_cards: list, depth: int):
-    root = Node(cards_p1, cards_p2, visible_cards=visible_cards)
+def generate_tree_1(cards_p1: np.ndarray, cards_p2: np.ndarray, visible_cards: list, depth: int, starting_player: int):
+    root = Node(cards_p1, cards_p2, visible_cards=visible_cards, current_player=starting_player)
 
     def expand(node: Node, depth):
         if depth == 0:
