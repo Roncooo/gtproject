@@ -127,6 +127,8 @@ def steal_and_place_cards(visible_cards, played_card, move_score, player):
     card_index = place_card_index(played_card, player)
     visible_cards[card_index].push(played_card)
 
+
+
 def current_scores(visible_cards):
     ''' In the version 2 of the game, scores rely on the number of cards in the stacks on the table. 
     Each move may change both scores so it's not enough to sum the scores made by one player to get his final score. '''
