@@ -64,7 +64,13 @@ def turn(player_type, current_player_deck, visible_cards, player_starting_index,
 
     # place the card on the table
     move_score = best_score_2(visible_cards, card, current_player=player_num)
-    steal_and_place_cards(visible_cards, card, move_score, player=player_num)
+    stolen_cards = steal_and_place_cards(visible_cards, card, move_score, player=player_num)
+
+    if len(stolen_cards)!=0:
+        if player_type == 'human':
+            print(f"You stole {stolen_cards}")
+        else:
+            print(f"CPU stole {stolen_cards}")
 
     return current_player_deck, visible_cards
 
