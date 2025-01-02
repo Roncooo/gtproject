@@ -46,21 +46,18 @@ def choose_card_by_policy_1(my_deck, opponent_deck, policy, my_starting_index, o
         # minimax policies only have depths that are one digit values and so i can take the last char and convert it to int
         depth = int(policy[-1])
         maximizing_player = True if current_player==1 else False
-        cards_p1 = my_deck if current_player==1 else opponent_deck
-        cards_p2 = my_deck if current_player==2 else opponent_deck
-        root = generate_tree_1(cards_p1[my_starting_index:], cards_p2[opponent_starting_index:], visible_cards.copy(), depth, current_player)
+        cards_p1 = my_deck[my_starting_index:] if current_player==1 else opponent_deck[opponent_starting_index:]
+        cards_p2 = my_deck[my_starting_index:] if current_player==2 else opponent_deck[opponent_starting_index:]
+        
+        root = generate_tree_1(cards_p1, cards_p2, visible_cards.copy(), depth, current_player)
         val, leaf = minimax(root, depth, maximizing_player)
         
         # find the next card to be played
         path = leaf.get_path()
-        if len(path)>1:
-            card_played = path[1].card_just_played
-        else:
-            # leaf = root, there is no choice
-            card_played = leaf.cards_player1[0] if current_player==2 else leaf.cards_player2[0]
+        # root has always at least a child, so at least one valid card to be used
+        card_played = path[1].card_just_played
         best_card_index = np.where(my_deck == card_played)[0]
         return shift_element(my_deck, best_card_index, my_starting_index)
-    
 
 def play_one_game_1(policy1, policy2, seed=None):
     

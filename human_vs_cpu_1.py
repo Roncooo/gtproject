@@ -1,9 +1,10 @@
-from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck, place_card_index, shift_element
+from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck, place_card_index, shift_element, show_visible_cards
 from utilities.policies import ALL_POLICIES
 import numpy as np
 from Primi_composti_1.score import best_score_1
 from Primi_composti_1.play_primi_composti_1 import choose_card_by_policy_1
 from utilities.simulations import sort_deck_according_to_policy
+import time
 
 def ask_player():
     ''' Asks the user the number of player he wants to play as. Returns 1 or 2 according to user answer. '''
@@ -40,97 +41,82 @@ def ask_card(human_deck):
         except:
             print(f"{card} is not a valid card in you deck, please try again.")
 
+
+def turn(player_type, current_player_deck, visible_cards, score, player_starting_index, opponent_starting_index = None , cpu_policy=None, opponent_deck=None, player_num=1):
+    """Handles a single turn for a player: cpu or human."""
+
+    if player_type == 'human':
+        print(f"The visible cards are {visible_cards}")
+        card = ask_card(current_player_deck[player_starting_index:])
+        current_score = best_score_1(visible_cards, card)
+        score += current_score
+        print(f"You made {current_score} points, you now have {score} points")
+        # Move card to correct position in the deck
+        card_deck_index = np.where(current_player_deck == card)[0]
+        current_player_deck = shift_element(current_player_deck, card_deck_index, player_starting_index)
+
+    else:
+        start = time.time()
+        current_player_deck = choose_card_by_policy_1(current_player_deck, opponent_deck, cpu_policy, player_starting_index, opponent_starting_index, visible_cards, player_num)
+        card = current_player_deck[player_starting_index]
+        current_score = best_score_1(visible_cards, card)
+        score += current_score
+        end = time.time()
+        print(f"The CPU thought for {end-start:.2f} s")
+        print(f"The CPU chose card {card} and made {current_score} points, now it has {score} points \n")
+
+    # Place the card on the table
+    card_placement_index = place_card_index(card, player_num)
+    visible_cards[card_placement_index] = card
+
+    return current_player_deck, visible_cards, score
+
 if __name__ == '__main__':
-    
+
     seed = 31
     # here cards_p1 and cards_p2 are ndarrays used as in play_primi_composti_1
-    cards_p1, cards_p2 = set_initial_players_deck(seed)
+    cards_p1, cards_p2 = set_initial_players_deck(seed_value=seed)
     visible_cards = np.zeros(4, dtype='int')
     human_score = cpu_score = 0
-    
+
     human_player = ask_player()
     cpu_policy = ask_cpu_policy()
-    
-    print("\nSTART\n")
-    
-    if human_player==1:
-        
-        cards_p1 = sort_deck_according_to_policy('asc', cards_p1) # this is just to make the gameplay easier, no impact on the logic
-        cards_p2 = sort_deck_according_to_policy(cpu_policy, cards_p2)
-        
-        for i in range(NUM_CARDS_PER_PLAYER):
-            
-            print(f"The visible cards are {visible_cards}")
-            # print(f"CPU cards are {cards_p2}")
-            card = ask_card(cards_p1[i:])
-            score = best_score_1(visible_cards, card)
-            human_score += score
-            print(f"You made {score} points, you now have {human_score} points")
-            # move the card in the correct spot of your deck
-            card_deck_index = np.where(cards_p1==card)[0]
-            cards_p1 = shift_element(cards_p1, card_deck_index, i)
-            # place the card on the table
-            card_placement_index = place_card_index(card, 1)
-            visible_cards[card_placement_index] = card
-            print(f"Now the visible cards are {visible_cards} and your deck {cards_p1[i+1:]}")
-            
-            cards_p2 = choose_card_by_policy_1(cards_p2, cards_p1, cpu_policy, i, i+1, visible_cards, 2)
-            card = cards_p2[i]
-            score = best_score_1(visible_cards, card)
-            cpu_score += score
-            print(f"The CPU chose card {card} and made {score} points, now it has {cpu_score} points")            
-            # place the card on the table
-            card_placement_index = place_card_index(card, 2)
-            visible_cards[card_placement_index] = card
-            # print(f"Now the visible cards are {visible_cards}")
-        
-        print("\nGAME OVER\n")
-        print(f"Results: your score {human_score}, cpu score {cpu_score}")
-        if human_score>cpu_score:
-            print("Congratulations, you won!!!")
-        elif human_score == cpu_score:
-            print("That's a tie, try again")
-        else:
-            print("Not your day, but champions are forged in the fire of failure. Rise, train, and reclaim your glory!")
-    
-    # human player chose to be player 2  
-    else:
-        
-        cards_p1 = sort_deck_according_to_policy(cpu_policy, cards_p1)
-        cards_p2 = sort_deck_according_to_policy('asc', cards_p2) # this is just to make the gameplay easier, no impact on the logic
-        
-        for i in range(NUM_CARDS_PER_PLAYER):
-            
-            cards_p1 = choose_card_by_policy_1(cards_p1, cards_p2, cpu_policy, i, i, visible_cards, 1)
-            card = cards_p1[i]
-            score = best_score_1(visible_cards, card)
-            cpu_score += score
-            print(f"The CPU chose card {card} and made {score} points, now it has {cpu_score} points")            
-            # place the card on the table
-            card_placement_index = place_card_index(card, 1)
-            visible_cards[card_placement_index] = card
-            # print(f"Now the visible cards are {visible_cards}")
 
-            print(f"The visible cards are {visible_cards}")
-            # print(f"CPU cards are {cards_p1}")
-            card = ask_card(cards_p2[i:])
-            score = best_score_1(visible_cards, card)
-            human_score += score
-            print(f"You made {score} points, you now have {human_score} points")
-            # move the card in the correct spot of your deck
-            card_deck_index = np.where(cards_p2==card)[0]
-            cards_p2 = shift_element(cards_p2, card_deck_index, i)
-            # place the card on the table
-            card_placement_index = place_card_index(card, 2)
-            visible_cards[card_placement_index] = card
-            print(f"Now the visible cards are {visible_cards} and your deck {cards_p2[i+1:]}")
-        
-        print("\nGAME OVER\n")
-        print(f"Results: your score {human_score}, cpu score {cpu_score}")
-        if human_score>cpu_score:
-            print("Congratulations, you won!!!")
-        elif human_score == cpu_score:
-            print("That's a tie, try again")
-        else:
-            print("Not your day, but champions are forged in the fire of failure. Rise, train, and reclaim your glory!")
+    print("\nSTART\n")
+
+    if human_player == 1:
+        cards_p1 = sort_deck_according_to_policy('asc', cards_p1)
+        cards_p2 = sort_deck_according_to_policy(cpu_policy, cards_p2)
+
+        for i in range(NUM_CARDS_PER_PLAYER):
+            # Human turn
+            cards_p1, visible_cards, human_score = turn('human', cards_p1, visible_cards, human_score, i, i, player_num=1)
+            print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p1[i + 1:]} \n")
+            # CPU turn
+            cards_p2, visible_cards, cpu_score = turn('cpu', cards_p2, visible_cards, cpu_score,  i, i+1,  cpu_policy=cpu_policy , opponent_deck=cards_p1,  player_num=2)
+
+    else:
+        cards_p1 = sort_deck_according_to_policy(cpu_policy, cards_p1)
+        cards_p2 = sort_deck_according_to_policy('asc', cards_p2)
+
+        for i in range(NUM_CARDS_PER_PLAYER):
+            # CPU turn
+            cards_p1, visible_cards, cpu_score = turn( 'cpu', cards_p1, visible_cards, cpu_score, i, i, cpu_policy=cpu_policy , opponent_deck=cards_p2, player_num=1)
+            # Human turn
+            cards_p2, visible_cards, human_score = turn('human', cards_p2, visible_cards, human_score, i, player_num=2)
+            print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p2[i + 1:]} \n")
+
+
+    print("\nGAME OVER\n")
+    print(f"Results: your score {human_score}, cpu score {cpu_score}")
+    if human_score>cpu_score:
+        print("Congratulations, you won!!!")
+    elif human_score == cpu_score:
+        print("That's a tie, try again")
+    else:
+        print("Not your day, but champions are forged in the fire of failure. Rise, train, and reclaim your glory!")
+
+
+
+
 

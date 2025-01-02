@@ -1,7 +1,7 @@
 import numpy as np
 
 class Node:
-    def __init__(self, cards_player1: np.ndarray, cards_player2: np.ndarray, current_player=1, delta_score=0,
+    def __init__(self, cards_player1: np.ndarray, cards_player2: np.ndarray, current_player, delta_score=0,
                  visible_cards=[]*4, card_just_played=None, parent=None):
         self.current_player = current_player  # 1 or 2, it's who has to move next (not who has just played)
         self.delta_score = delta_score  # score 1 - score 2

@@ -100,16 +100,20 @@ def choose_card_by_policy_2(my_deck, opponent_deck, policy, my_starting_index, o
     if policy in MINIMAX_POLICIES:
         # minimax policies only have depths that are one digit values and so i can take the last char and convert it to int
         depth = int(policy[-1])
-        root = generate_tree_2(my_deck[my_starting_index:], opponent_deck[opponent_starting_index:], copy.deepcopy(visible_cards), depth)
-        am_i_p1 = 2 in my_deck
-        val, leaf = minimax(root, depth, am_i_p1)
+        
+        maximizing_player = True if current_player==1 else False
+        cards_p1 = my_deck[my_starting_index:] if current_player==1 else opponent_deck[opponent_starting_index:]
+        cards_p2 = my_deck[my_starting_index:] if current_player==2 else opponent_deck[opponent_starting_index:]
+            
+        root = generate_tree_2(cards_p1=cards_p1, cards_p2=cards_p2, table_cards=copy.deepcopy(visible_cards), depth=depth, current_player=current_player)
+        val, leaf = minimax(root, depth, maximizing_player)
         
         # find the next card to be played
         path = leaf.get_path()
+        # root has always at least a child, so at least one valid card to be used
         card_played = path[1].card_just_played
         best_card_index = np.where(my_deck == card_played)[0]
         return shift_element(my_deck, best_card_index, my_starting_index)
-
 
 def steal_and_place_cards(visible_cards, played_card, move_score, player):
     '''

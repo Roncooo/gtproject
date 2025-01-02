@@ -43,7 +43,8 @@ def solve(current_node, depths, generate_tree_function):
     for depth in depths:
         start = time.time()
 
-        root = generate_tree_function(current_node.cards_player1, current_node.cards_player2, current_node.visible_cards,depth)
+        # current player = 1 because we are only using even depths
+        root = generate_tree_function(current_node.cards_player1, current_node.cards_player2, current_node.visible_cards, depth, 1)
         score, leaf_minimax = minimax(root, depth, True)
 
         current_node = leaf_minimax

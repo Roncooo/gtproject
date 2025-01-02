@@ -9,7 +9,7 @@ if __name__ == "__main__":
     seed = 31
     cards_p1, cards_p2 = set_initial_players_deck(seed)
 
-    tree_root = Node(cards_p1, cards_p2, visible_cards=[0]*4) # initial state tree
+    tree_root = Node(cards_p1, cards_p2, visible_cards=[0]*4, current_player=1) # initial state tree
     depths = [6, 6, 12] # partial depths for the resolution of the tree
     final_score, final_node, all_paths = solve(tree_root, depths, generate_tree_function=generate_tree_1)
 

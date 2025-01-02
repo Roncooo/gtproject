@@ -1,9 +1,10 @@
-from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck, place_card_index, shift_element, show_visible_cards
+from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck, show_visible_cards, shift_element
 from utilities.policies import ALL_POLICIES
 import numpy as np
 from Primi_composti_2.play_primi_composti_2 import choose_card_by_policy_2, steal_and_place_cards, current_scores, best_score_2
 from utilities.simulations import sort_deck_according_to_policy
 from utilities.Stack import Stack
+import time
 
 def ask_player():
     ''' Asks the user the number of player he wants to play as. Returns 1 or 2 according to user answer. '''
@@ -40,6 +41,39 @@ def ask_card(human_deck):
         except:
             print(f"{card} is not a valid card in you deck, please try again.")
 
+
+def turn(player_type, current_player_deck, visible_cards, player_starting_index, opponent_starting_index = None , cpu_policy=None, opponent_deck=None, player_num=1):
+    '''Handles a single turn for a player: human or cpu.'''
+
+    if player_type == 'human':
+
+        print(f"The visible cards are {show_visible_cards(visible_cards)}")
+        # print(f"CPU cards are {cards_p1}")
+        card = ask_card(current_player_deck[player_starting_index:])
+        # move the card in the correct spot of your deck
+        card_deck_index = np.where(current_player_deck == card)[0]
+        current_player_deck = shift_element(current_player_deck, card_deck_index, player_starting_index)
+
+    else:
+        start = time.time()
+        current_player_deck = choose_card_by_policy_2(current_player_deck, opponent_deck, cpu_policy, player_starting_index, opponent_starting_index, visible_cards, player_num)
+        card = current_player_deck[player_starting_index]
+        end = time.time()
+        print(f"The CPU thought for {end-start:.2f} s")
+        print(f"The CPU chose card {card}")
+
+    # place the card on the table
+    move_score = best_score_2(visible_cards, card, current_player=player_num)
+    stolen_cards = steal_and_place_cards(visible_cards, card, move_score, player=player_num)
+
+    if len(stolen_cards)!=0:
+        if player_type == 'human':
+            print(f"You stole {stolen_cards}")
+        else:
+            print(f"CPU stole {stolen_cards}")
+
+    return current_player_deck, visible_cards
+
 if __name__ == '__main__':
     
     seed = 31
@@ -59,39 +93,18 @@ if __name__ == '__main__':
         cards_p2 = sort_deck_according_to_policy(cpu_policy, cards_p2)
         
         for i in range(NUM_CARDS_PER_PLAYER):
-            
-            print(f"The visible cards are {show_visible_cards(visible_cards)}")
-            # print(f"CPU cards are {cards_p2}")
-            card = ask_card(cards_p1[i:])
-            # move the card in the correct spot of your deck
-            card_deck_index = np.where(cards_p1==card)[0]
-            cards_p1 = shift_element(cards_p1, card_deck_index, i)
-            # place the card on the table
-            move_score = best_score_2(visible_cards, card, current_player=1)
-            steal_and_place_cards(visible_cards, card, move_score, player=1)
-            print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p1[i+1:]}")
+
+            # Human turn
+            cards_p1, visible_cards = turn('human', cards_p1, visible_cards, i, i, player_num=1)
             human_score, cpu_score = current_scores(visible_cards)
-            print(f"Scores are now: human {human_score} - CPU {cpu_score}")
-            
-            cards_p2 = choose_card_by_policy_2(cards_p2, cards_p1, cpu_policy, i, i+1, visible_cards, 2)
-            card = cards_p2[i]
-            print(f"The CPU chose card {card}")
-            # place the card on the table
-            move_score = best_score_2(visible_cards, card, current_player=2)
-            steal_and_place_cards(visible_cards, card, move_score, player=2)
+            print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p1[i + 1:]} ")
+            print(f"Scores are now: human {human_score} - CPU {cpu_score} \n")
+
+            # CPU turn
+            cards_p2, visible_cards = turn('cpu', cards_p2, visible_cards, i, i+1,  cpu_policy=cpu_policy , opponent_deck=cards_p1,  player_num=2)
             human_score, cpu_score = current_scores(visible_cards)
-            print(f"Scores are now: human {human_score} - CPU {cpu_score}")
-            # print(f"Now the visible cards are {visible_cards}")
-        
-        print("\nGAME OVER\n")
-        print(f"Results: your score {human_score}, cpu score {cpu_score}")
-        if human_score>cpu_score:
-            print("Congratulations, you won!!!")
-        elif human_score == cpu_score:
-            print("That's a tie, try again")
-        else:
-            print("Not your day, but champions are forged in the fire of failure. Rise, train, and reclaim your glory!")
-    
+            print(f"Scores are now: human {human_score} - CPU {cpu_score} \n")
+
     # human player chose to be player 2  
     else:
         
@@ -99,37 +112,25 @@ if __name__ == '__main__':
         cards_p2 = sort_deck_according_to_policy('asc', cards_p2) # this is just to make the gameplay easier, no impact on the logic
         
         for i in range(NUM_CARDS_PER_PLAYER):
-            
-            cards_p1 = choose_card_by_policy_2(cards_p1, cards_p2, cpu_policy, i, i, visible_cards, 1)
-            card = cards_p1[i]
-            print(f"The CPU chose card {card}")
-            # place the card on the table
-            move_score = best_score_2(visible_cards, card, current_player=1)
-            steal_and_place_cards(visible_cards, card, move_score, player=1)
-            human_score, cpu_score = current_scores(visible_cards)
-            print(f"Scores are now: human {human_score} - CPU {cpu_score}")           
-            # print(f"Now the visible cards are {visible_cards}")
 
-            print(f"The visible cards are {show_visible_cards(visible_cards)}")
-            # print(f"CPU cards are {cards_p1}")
-            card = ask_card(cards_p2[i:])
-            # move the card in the correct spot of your deck
-            card_deck_index = np.where(cards_p2==card)[0]
-            cards_p2 = shift_element(cards_p2, card_deck_index, i)
-            # place the card on the table
-            move_score = best_score_2(visible_cards, card, current_player=2)
-            steal_and_place_cards(visible_cards, card, move_score, player=2)
-            print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p2[i+1:]}")
+            # CPU turn
+            cards_p1, visible_cards = turn('cpu', cards_p1, visible_cards, i, i, cpu_policy=cpu_policy, opponent_deck=cards_p2, player_num=1)
             human_score, cpu_score = current_scores(visible_cards)
-            print(f"Scores are now: human {human_score} - CPU {cpu_score}")   
-            
+            print(f"Scores are now: human {human_score} - CPU {cpu_score}\n")
+
+            # Human turn
+            cards_p2, visible_cards = turn('human', cards_p2, visible_cards, i, player_num=2)
+            human_score, cpu_score = current_scores(visible_cards)
+            print(f"Now the visible cards are {show_visible_cards(visible_cards)} and your deck {cards_p2[i + 1:]} ")
+            print(f"Scores are now: human {human_score} - CPU {cpu_score} \n")
+
         
-        print("\nGAME OVER\n")
-        print(f"Results: your score {human_score}, cpu score {cpu_score}")
-        if human_score>cpu_score:
-            print("Congratulations, you won!!!")
-        elif human_score == cpu_score:
-            print("That's a tie, try again")
-        else:
-            print("Not your day, but champions are forged in the fire of failure. Rise, train, and reclaim your glory!")
+    print("\nGAME OVER\n")
+    print(f"Results: your score {human_score}, cpu score {cpu_score}")
+    if human_score>cpu_score:
+        print("Congratulations, you won!!!")
+    elif human_score == cpu_score:
+        print("That's a tie, try again")
+    else:
+        print("Not your day, but champions are forged in the fire of failure. Rise, train, and reclaim your glory!")
 

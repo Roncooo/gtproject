@@ -20,8 +20,8 @@ def place_card(visible_cards, new_card, player):
         else:
             visible_cards[3].push(new_card)
 
-def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
-    root = Node(cards_p1, cards_p2, visible_cards=table_cards)
+def generate_tree_2(cards_p1, cards_p2, table_cards, depth, current_player):
+    root = Node(cards_p1, cards_p2, visible_cards=table_cards, current_player=current_player)
     def expand(node: Node, depth):
         if depth == 0:
             return
@@ -33,7 +33,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                 my_prime = False if node.visible_cards[0].is_empty() else node.visible_cards[0].top()
                 my_composite = False if node.visible_cards[1].is_empty() else node.visible_cards[1].top()
                 
-                # i can steal 2 cards from the opponent
+                # I can steal 2 cards from the opponent
                 if opponent_prime and opponent_composite and (
                     is_valid_operation(c, opponent_prime, opponent_composite)
                 ): 
@@ -53,8 +53,8 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     node.add_child(new_node)
                     expand(new_node, depth - 1)
                 
-                # i can steal your prime with my composite or my prime
-                if opponent_prime and (
+                # I can steal your prime with my composite or my prime
+                elif opponent_prime and (
                     (my_composite and is_valid_operation(c, opponent_prime, my_composite)) or
                     (my_prime and is_valid_operation(c, opponent_prime, my_prime))
                 ):
@@ -73,8 +73,8 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     node.add_child(new_node)
                     expand(new_node, depth - 1)
                     
-                # i can steal your composite with my composite or my prime
-                if opponent_composite and (
+                # I can steal your composite with my composite or my prime
+                elif opponent_composite and (
                     (my_prime and is_valid_operation(c, opponent_composite, my_prime)) or 
                     (my_composite and is_valid_operation(c, opponent_composite, my_composite))
                 ): 
@@ -93,8 +93,8 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     node.add_child(new_node)
                     expand(new_node, depth - 1)
                 
-                # i cannot steal cards, we are saying that one can also choose to not steal cards
-                if True:
+                # I cannot steal cards
+                else:
                     new_visible_cards = copy.deepcopy(node.visible_cards)
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
@@ -118,7 +118,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                 my_prime = False if node.visible_cards[2].is_empty() else node.visible_cards[2].top()
                 my_composite = False if node.visible_cards[3].is_empty() else node.visible_cards[3].top()
                 
-                # i can steal 2 cards from the opponent
+                # I can steal 2 cards from the opponent
                 if opponent_composite and opponent_prime and (
                     is_valid_operation(c, opponent_prime, opponent_composite)
                 ): 
@@ -138,8 +138,8 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     node.add_child(new_node)
                     expand(new_node, depth - 1)
                 
-                # i can steal your prime with my composite or my prime
-                if opponent_prime and (
+                # I can steal your prime with my composite or my prime
+                elif opponent_prime and (
                     (my_composite and is_valid_operation(c, opponent_prime, my_composite)) or
                     (my_prime and is_valid_operation(c, opponent_prime, my_prime))
                 ):
@@ -158,8 +158,8 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     node.add_child(new_node)
                     expand(new_node, depth - 1)
                     
-                # i can steal your composite with my composite or my prime
-                if opponent_composite and (
+                # I can steal your composite with my composite or my prime
+                elif opponent_composite and (
                     (my_prime and is_valid_operation(c, opponent_composite, my_prime)) or 
                     (my_composite and is_valid_operation(c, opponent_composite, my_composite))
                 ): 
@@ -178,8 +178,8 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth):
                     node.add_child(new_node)
                     expand(new_node, depth - 1)
                 
-                # i cannot steal cards, we are saying that one can also choose to not steal cards
-                if True:
+                # I cannot steal cards
+                else:
                     new_visible_cards = copy.deepcopy(node.visible_cards)
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
