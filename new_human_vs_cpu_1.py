@@ -4,6 +4,7 @@ import numpy as np
 from Primi_composti_1.score import best_score_1
 from Primi_composti_1.play_primi_composti_1 import choose_card_by_policy_1
 from utilities.simulations import sort_deck_according_to_policy
+import time
 
 def ask_player():
     ''' Asks the user the number of player he wants to play as. Returns 1 or 2 according to user answer. '''
@@ -42,8 +43,7 @@ def ask_card(human_deck):
 
 
 def turn(player_type, current_player_deck, visible_cards, score, player_starting_index, opponent_starting_index = None , cpu_policy=None, opponent_deck=None, player_num=1):
-    """Handles a single turn for a player: cpu or human.
-    """
+    """Handles a single turn for a player: cpu or human."""
 
     if player_type == 'human':
         print(f"The visible cards are {visible_cards}")
@@ -56,10 +56,13 @@ def turn(player_type, current_player_deck, visible_cards, score, player_starting
         current_player_deck = shift_element(current_player_deck, card_deck_index, player_starting_index)
 
     else:
+        start = time.time()
         current_player_deck = choose_card_by_policy_1(current_player_deck, opponent_deck, cpu_policy, player_starting_index, opponent_starting_index, visible_cards, player_num)
         card = current_player_deck[player_starting_index]
         current_score = best_score_1(visible_cards, card)
         score += current_score
+        end = time.time()
+        print(f"The CPU thought for {end-start:.2f} s")
         print(f"The CPU chose card {card} and made {current_score} points, now it has {score} points \n")
 
     # Place the card on the table
@@ -72,7 +75,7 @@ if __name__ == '__main__':
 
     seed = 31
     # here cards_p1 and cards_p2 are ndarrays used as in play_primi_composti_1
-    cards_p1, cards_p2 = set_initial_players_deck(seed)
+    cards_p1, cards_p2 = set_initial_players_deck(seed_value=None)
     visible_cards = np.zeros(4, dtype='int')
     human_score = cpu_score = 0
 

@@ -4,6 +4,7 @@ import numpy as np
 from Primi_composti_2.play_primi_composti_2 import choose_card_by_policy_2, steal_and_place_cards, current_scores, best_score_2
 from utilities.simulations import sort_deck_according_to_policy
 from utilities.Stack import Stack
+import time
 
 def ask_player():
     ''' Asks the user the number of player he wants to play as. Returns 1 or 2 according to user answer. '''
@@ -42,8 +43,7 @@ def ask_card(human_deck):
 
 
 def turn(player_type, current_player_deck, visible_cards, player_starting_index, opponent_starting_index = None , cpu_policy=None, opponent_deck=None, player_num=1):
-    """Handles a single turn for a player: human or cpu.
-    """
+    '''Handles a single turn for a player: human or cpu.'''
 
     if player_type == 'human':
 
@@ -55,10 +55,12 @@ def turn(player_type, current_player_deck, visible_cards, player_starting_index,
         current_player_deck = shift_element(current_player_deck, card_deck_index, player_starting_index)
 
     else:
+        start = time.time()
         current_player_deck = choose_card_by_policy_2(current_player_deck, opponent_deck, cpu_policy, player_starting_index, opponent_starting_index, visible_cards, player_num)
         card = current_player_deck[player_starting_index]
+        end = time.time()
+        print(f"The CPU thought for {end-start:.2f} s")
         print(f"The CPU chose card {card}")
-
 
     # place the card on the table
     move_score = best_score_2(visible_cards, card, current_player=player_num)

@@ -114,18 +114,23 @@ def choose_card_by_policy_2(my_deck, opponent_deck, policy, my_starting_index, o
 def steal_and_place_cards(visible_cards, played_card, move_score, player):
     '''
     Manages the stealing of cards from the opponent and the placement of the played card.
+    Returns the value of the cards stolen (just for display).
     '''
     stolen_prime_index, stolen_composite_index = find_stolen_card_indexes(played_card, move_score, player)
+    stolen_cards = []
     if stolen_prime_index!=-1:
         stolen_prime_card = visible_cards[stolen_prime_index].pop()
         visible_cards[my_prime_index(player)].push(stolen_prime_card)
+        stolen_cards.push(stolen_prime_card)
     if stolen_composite_index!=-1:
         stolen_composite_card = visible_cards[stolen_composite_index].pop()
         visible_cards[my_composite_index(player)].push(stolen_composite_card)
+        stolen_cards.push(stolen_composite_card)
         
     # places the card on the table
     card_index = place_card_index(played_card, player)
     visible_cards[card_index].push(played_card)
+    return stolen_cards
 
 
 
