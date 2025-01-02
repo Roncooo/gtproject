@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
     seed = 31
     # here cards_p1 and cards_p2 are ndarrays used as in play_primi_composti_1
-    cards_p1, cards_p2 = set_initial_players_deck(seed_value=None)
+    cards_p1, cards_p2 = set_initial_players_deck(seed_value=seed)
     visible_cards = np.zeros(4, dtype='int')
     human_score = cpu_score = 0
 

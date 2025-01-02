@@ -121,11 +121,11 @@ def steal_and_place_cards(visible_cards, played_card, move_score, player):
     if stolen_prime_index!=-1:
         stolen_prime_card = visible_cards[stolen_prime_index].pop()
         visible_cards[my_prime_index(player)].push(stolen_prime_card)
-        stolen_cards.push(stolen_prime_card)
+        stolen_cards.append(stolen_prime_card)
     if stolen_composite_index!=-1:
         stolen_composite_card = visible_cards[stolen_composite_index].pop()
         visible_cards[my_composite_index(player)].push(stolen_composite_card)
-        stolen_cards.push(stolen_composite_card)
+        stolen_cards.append(stolen_composite_card)
         
     # places the card on the table
     card_index = place_card_index(played_card, player)
