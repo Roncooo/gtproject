@@ -39,12 +39,17 @@ def minimax(position: Node, depth: int, maximizingPlayer: bool, alpha=float('-in
 def solve(current_node, depths, generate_tree_function):
 
     all_paths = []
+    current_player = 1 # According to the rules, player 1 starts
 
-    for depth in depths:
+    for i, depth in enumerate(depths):
         start = time.time()
 
+        # if previous depth is odd, then i need to switch to the other starting player
+        if i>0 and depth%2!=0:
+            current_player = 2 if current_player==1 else 1
+        
         # current player = 1 because we are only using even depths
-        root = generate_tree_function(current_node.cards_player1, current_node.cards_player2, current_node.visible_cards, depth, 1)
+        root = generate_tree_function(current_node.cards_player1, current_node.cards_player2, current_node.visible_cards, depth, current_player)
         score, leaf_minimax = minimax(root, depth, True)
 
         current_node = leaf_minimax
