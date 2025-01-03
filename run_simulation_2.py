@@ -1,5 +1,6 @@
 from Primi_composti_2.play_primi_composti_2 import *
 from utilities.simulations import play_n_games_for_each_policy_combination
+from utilities.utils import print_results
 import time
 
 

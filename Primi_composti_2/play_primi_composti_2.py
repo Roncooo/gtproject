@@ -1,10 +1,13 @@
 from utilities.Stack import Stack
-from utilities.utils import *
-from utilities.policies import *
+from utilities.utils import is_valid_operation, card_score_by_index, whose_card_is_this, card_score_by_value, opponent_composite_index, opponent_prime_index, my_composite_index, my_prime_index, place_card_index, set_initial_players_deck, shift_element, NUM_CARDS_PER_PLAYER, show_visible_cards
+from utilities.policies import PREDETERMINED_POLICIES, MINIMAX_POLICIES
 from utilities.simulations import sort_deck_according_to_policy
-import copy
 from utilities.solve_tree import minimax
 from Primi_composti_2.tree_primi_composti_2 import generate_tree_2
+from Primi_composti_2.score import current_scores
+import copy
+import numpy as np
+from prettytable import PrettyTable
 
 def best_score_2(visible_cards, result_card, current_player):
     '''
@@ -13,7 +16,7 @@ def best_score_2(visible_cards, result_card, current_player):
     Stops if the theoretical best score for that particular position is detected or when all possibilities are calculated.
     '''
     max_operation_score = 3 # in the best case I can steal one prime and one composite
-    placed_card_score = card_score(result_card)
+    placed_card_score = card_score_by_value(result_card)
     best_operation_score = 0 # best score found so far
     
     # this nested loop chooses the couples of operands
@@ -31,11 +34,9 @@ def best_score_2(visible_cards, result_card, current_player):
             if not is_valid_operation(result=result_card, operand1=operand_1, operand2=operand_2):
                 continue
             
-            score_card_i = PRIME_SCORE if is_prime_index(i) else COMPOSITE_SCORE
-            score_card_j = PRIME_SCORE if is_prime_index(j) else COMPOSITE_SCORE
             # if i make an operation with a card of the opponent, i get those points
-            current_operation_score  = score_card_i if whose_card_is_this(i)!=current_player else 0
-            current_operation_score += score_card_j if whose_card_is_this(j)!=current_player else 0
+            current_operation_score  = card_score_by_index(i) if whose_card_is_this(i)!=current_player else 0
+            current_operation_score += card_score_by_index(j) if whose_card_is_this(j)!=current_player else 0
             
             if current_operation_score > best_operation_score:
                 best_operation_score = current_operation_score
@@ -54,13 +55,34 @@ def find_stolen_card_indexes(played_card, points_made, player):
     Given `played_card`, `poins_made` and `player`, returns the indexes (among the visible_cards) of the cards stolen to my opponent in the best action possible. Returns, in order and possibly -1, the index of the stolen PRIME card and then the index of the COMPOSITE card.
     '''
     # points made just from the stolen cards
-    operands_points = points_made - card_score(played_card)
+    operands_points = points_made - card_score_by_value(played_card)
         
     match operands_points:
         case 0: return -1, -1
         case 1: return -1, opponent_composite_index(player)
         case 2: return opponent_prime_index(player), -1
         case 3: return opponent_prime_index(player), opponent_composite_index(player)
+
+def steal_and_place_cards(visible_cards, played_card, move_score, player):
+    '''
+    Manages the stealing of cards from the opponent and the placement of the played card.
+    Returns the value of the cards stolen (just for display).
+    '''
+    stolen_prime_index, stolen_composite_index = find_stolen_card_indexes(played_card, move_score, player)
+    stolen_cards = []
+    if stolen_prime_index!=-1:
+        stolen_prime_card = visible_cards[stolen_prime_index].pop()
+        visible_cards[my_prime_index(player)].push(stolen_prime_card)
+        stolen_cards.append(stolen_prime_card)
+    if stolen_composite_index!=-1:
+        stolen_composite_card = visible_cards[stolen_composite_index].pop()
+        visible_cards[my_composite_index(player)].push(stolen_composite_card)
+        stolen_cards.append(stolen_composite_card)
+        
+    # places the card on the table
+    card_index = place_card_index(played_card, player)
+    visible_cards[card_index].push(played_card)
+    return stolen_cards
     
 
 def choose_card_by_policy_2(my_deck, opponent_deck, policy, my_starting_index, opponent_starting_index, visible_cards, current_player):
@@ -115,37 +137,9 @@ def choose_card_by_policy_2(my_deck, opponent_deck, policy, my_starting_index, o
         best_card_index = np.where(my_deck == card_played)[0]
         return shift_element(my_deck, best_card_index, my_starting_index)
 
-def steal_and_place_cards(visible_cards, played_card, move_score, player):
-    '''
-    Manages the stealing of cards from the opponent and the placement of the played card.
-    Returns the value of the cards stolen (just for display).
-    '''
-    stolen_prime_index, stolen_composite_index = find_stolen_card_indexes(played_card, move_score, player)
-    stolen_cards = []
-    if stolen_prime_index!=-1:
-        stolen_prime_card = visible_cards[stolen_prime_index].pop()
-        visible_cards[my_prime_index(player)].push(stolen_prime_card)
-        stolen_cards.append(stolen_prime_card)
-    if stolen_composite_index!=-1:
-        stolen_composite_card = visible_cards[stolen_composite_index].pop()
-        visible_cards[my_composite_index(player)].push(stolen_composite_card)
-        stolen_cards.append(stolen_composite_card)
-        
-    # places the card on the table
-    card_index = place_card_index(played_card, player)
-    visible_cards[card_index].push(played_card)
-    return stolen_cards
-
-
-
-def current_scores(visible_cards):
-    ''' In the version 2 of the game, scores rely on the number of cards in the stacks on the table. 
-    Each move may change both scores so it's not enough to sum the scores made by one player to get his final score. '''
-    score_p1 = PRIME_SCORE * visible_cards[0].size() + COMPOSITE_SCORE * visible_cards[1].size()
-    score_p2 = PRIME_SCORE * visible_cards[2].size() + COMPOSITE_SCORE * visible_cards[3].size()
-    return score_p1, score_p2
 
 def play_one_game_2(policy1, policy2, seed=None):
+    '''Returns the score of player 1, score of player 2, deck of player 1 and deck of player 2. The decks are returned for the logging and printing of the game since they are sorted from the first card played to the last.'''
 
     deck_p1, deck_p2 = set_initial_players_deck(seed)
     
@@ -154,7 +148,8 @@ def play_one_game_2(policy1, policy2, seed=None):
     deck_p1 = sort_deck_according_to_policy(policy1, deck_p1)
     deck_p2 = sort_deck_according_to_policy(policy2, deck_p2)
     
-    score1 = score2 = 0
+    score1: int = 0
+    score2: int = 0
     # last card on the small decks on the table
     # [primes p1, composites p1, primes p2, composites p2]
     visible_cards = [Stack(), Stack(), Stack(), Stack()]

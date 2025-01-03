@@ -12,8 +12,7 @@ if __name__ == "__main__":
 
     tree_root = Node(cards_p1, cards_p2, visible_cards=[Stack(), Stack(), Stack(), Stack()], current_player=1)  # initial state tree
     depths = [3] * 8 # partial depths for the resolution of the tree
-    assert(sum(depths)==24)
-    final_score, final_node, all_paths = solve(tree_root, depths, generate_tree_function=generate_tree_2)
+    all_paths = solve(tree_root, depths, generate_tree_function=generate_tree_2)
 
     # Print the path
     table = PrettyTable()

@@ -1,11 +1,11 @@
-from Primi_composti_1.tree_primi_composti_1 import generate_tree_1
-from Primi_composti_2.tree_primi_composti_2 import generate_tree_2
 from utilities.Node import Node
-from utilities.Stack import *
+from utilities.utils import NUMBER_OF_CARDS
+from typing import List
 import time
 
 def minimax(position: Node, depth: int, maximizingPlayer: bool, alpha=float('-inf'), beta=float('+inf')):
-    
+    '''Executes the minimax (recursive) algorithm with alpha-beta pruning on the tree for ```depth``` levels starting from ```position```. Returns the best value and the best leaf, which, according to the type of the current player (maximizing or minimizing player) is the one with the highest or lowest value.'''
+        
     if depth == 0 or not position.children:  # Check for leaf node or game over
         return position.delta_score, position
 
@@ -36,7 +36,10 @@ def minimax(position: Node, depth: int, maximizingPlayer: bool, alpha=float('-in
         return minEval, bestLeaf
 
 
-def solve(current_node, depths, generate_tree_function):
+def solve(current_node: Node, depths: List[int], generate_tree_function):
+    '''Solves the game using minimax policy iteratively with steps defined by ```depths```. Returns the path from ```current_node``` to the best leaf as a list of nodes.'''
+
+    assert sum(depths)==NUMBER_OF_CARDS, f"The sum of depths is {sum(depths)} but it must be equal to {NUMBER_OF_CARDS}"
 
     all_paths = []
     current_player = 1 # According to the rules, player 1 starts
@@ -59,4 +62,4 @@ def solve(current_node, depths, generate_tree_function):
         end = time.time()
         print(f"Done {depth} levels in {end - start:.2f} s")
 
-    return score, current_node, all_paths
+    return all_paths

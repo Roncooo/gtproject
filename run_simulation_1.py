@@ -1,9 +1,10 @@
 from Primi_composti_1.play_primi_composti_1 import *
-import time
 from utilities.simulations import play_n_games_for_each_policy_combination
+from utilities.utils import print_results
+import time
 
 if __name__ == "__main__":
-    n_games = 50 # remember to disable all the prints in play_one_game to speed up the process (a lot)
+    n_games = 1 # remember to disable all the prints in play_one_game to speed up the process (a lot)
     policies = ['asc', 'minimax_4']
     
     start = time.time()

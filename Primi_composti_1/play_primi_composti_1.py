@@ -1,18 +1,14 @@
-from utilities.utils import *
-from utilities.policies import *
+from utilities.utils import PRIME_SCORE, NUM_CARDS_PER_PLAYER, shift_element, set_initial_players_deck, place_card_index
+from utilities.policies import PREDETERMINED_POLICIES, MINIMAX_POLICIES
 from utilities.simulations import sort_deck_according_to_policy
 from Primi_composti_1.tree_primi_composti_1 import generate_tree_1
 from utilities.solve_tree import minimax
 from Primi_composti_1.score import best_score_1
-
-def place_card_index(card, player_number):
-    ''' Tells on which index (in [0,3]) to place a card '''
-    return (player_number-1)*2+(0 if is_prime(card) else 1)
-
+import numpy as np
+from prettytable import PrettyTable
 
 def choose_card_by_policy_1(my_deck, opponent_deck, policy, my_starting_index, opponent_starting_index, visible_cards, current_player):
-    ''' returns a copy of `my_deck` with, in position `my_starting_index`, the next card to be played. `my_starting_index` is the index from which I start looking for the next card, all those before are already played. 
-    opponent_deck and opponent_starting_index are needed only for MINIMAX_POLICIES
+    ''' returns a copy of `my_deck` with, in position `my_starting_index`, the next card to be played. `my_starting_index` is the index from which I (current player) start looking for the next card, all those before are already played. `opponent_deck` and `opponent_starting_index` are needed only for `MINIMAX_POLICIES`.
     '''
     
     # policy is easy, the deck is already sorted accordingly
@@ -38,9 +34,7 @@ def choose_card_by_policy_1(my_deck, opponent_deck, policy, my_starting_index, o
         # then with player_deck[starting_index:] we can iterate over just new cards
             # example: deck is [2,3,4,5,6,7], player has already played 2 (we are now at iteration 1)
             # if we decide to play 7 then we rearrange the deck to be [2,7,3,4,5,6] so that deck[starting_index] is 7
-        my_deck = shift_element(my_deck, best_card_index, my_starting_index)
-
-        return my_deck
+        return shift_element(my_deck, best_card_index, my_starting_index)
     
     if policy in MINIMAX_POLICIES:
         # minimax policies only have depths that are one digit values and so i can take the last char and convert it to int
@@ -60,7 +54,7 @@ def choose_card_by_policy_1(my_deck, opponent_deck, policy, my_starting_index, o
         return shift_element(my_deck, best_card_index, my_starting_index)
 
 def play_one_game_1(policy1, policy2, seed=None):
-    
+    '''Returns the score of player 1, score of player 2, deck of player 1 and deck of player 2. The decks are returned for the logging and printing of the game since they are sorted from the first card played to the last.'''
     deck_p1, deck_p2 = set_initial_players_deck(seed)
 
     # For predetermined policies, this sorting is all choose_card needs.
@@ -68,7 +62,8 @@ def play_one_game_1(policy1, policy2, seed=None):
     deck_p1 = sort_deck_according_to_policy(policy1, deck_p1)
     deck_p2 = sort_deck_according_to_policy(policy2, deck_p2)
     
-    score1 = score2 = 0
+    score1: int = 0
+    score2: int = 0
     # last card on the small decks on the table
     # [primes p1, composites p1, primes p2, composites p2]
     visible_cards = np.zeros(4, dtype='int')
@@ -122,6 +117,3 @@ def print_game_1(deck_p1, deck_p2):
         table.add_row([2, card_p2, show_visible_cards, score1, score2, deck_p1[i+1:], deck_p2[i+1:]])
     
     print(table)
-
-
-

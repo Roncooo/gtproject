@@ -1,6 +1,7 @@
 from utilities.Node import Node
-from utilities.utils import *
+from utilities.utils import is_prime, remove
 from Primi_composti_1.score import best_score_1
+import numpy as np
 
 def place_card(visible_cards, new_card, player):
     new_gameboard = visible_cards.copy()

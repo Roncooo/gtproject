@@ -1,6 +1,6 @@
 import copy
 from  utilities.Node import Node
-from  utilities.utils import *
+from  utilities.utils import PRIME_SCORE, COMPOSITE_SCORE, is_prime, is_valid_operation, remove
 
 
 def delta(visible_cards):

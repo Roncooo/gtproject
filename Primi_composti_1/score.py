@@ -1,4 +1,4 @@
-from utilities.utils import PRIME_SCORE, COMPOSITE_SCORE, card_score, is_valid_operation, is_prime_index
+from utilities.utils import PRIME_SCORE, card_score_by_value, is_valid_operation, card_score_by_index
 
 def best_score_1(visible_cards, result_card):    
     '''
@@ -7,7 +7,7 @@ def best_score_1(visible_cards, result_card):
     Stops if the theoretical best score for that particular position is detected or when all possibilities are calculated.
     '''
     max_operation_score = 3*PRIME_SCORE
-    placed_card_score = card_score(result_card)
+    placed_card_score = card_score_by_value(card_value=result_card)
     best_operation_score = 0 # best score found so far
     
     # this nested loop chooses the couples of operands
@@ -19,9 +19,7 @@ def best_score_1(visible_cards, result_card):
             if not is_valid_operation(result=result_card, operand1=visible_cards[i], operand2=visible_cards[j]):
                 continue
             
-            score_card_i = PRIME_SCORE if is_prime_index(i) else COMPOSITE_SCORE
-            score_card_j = PRIME_SCORE if is_prime_index(j) else COMPOSITE_SCORE
-            current_operation_score = score_card_i + score_card_j
+            current_operation_score = card_score_by_index(card_index=i) + card_score_by_index(card_index=j)
             
             if current_operation_score > best_operation_score:
                 best_operation_score = current_operation_score

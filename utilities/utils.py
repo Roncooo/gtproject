@@ -1,7 +1,6 @@
 import numpy as np
 import random
 from prettytable import PrettyTable
-
 from utilities.Stack import Stack
 
 # Useful to save some computation: this gives the answer in O(1)
@@ -29,9 +28,13 @@ def is_prime_index(index: int):
     ''' Tells if at position index of the visible cards there is a stack of prime cards (`True`) or composites (`False`). '''
     return index % 2 == 0
 
-def card_score(card: int):
+def card_score_by_value(card_value: int):
     '''returns `PRIME_SCORE` if the card is prime, otherwise `COMPOSITE_SCORE`. '''
-    return PRIME_SCORE if is_prime(card) else COMPOSITE_SCORE
+    return PRIME_SCORE if is_prime(card_value) else COMPOSITE_SCORE
+
+def card_score_by_index(card_index: int):
+    ''' returns the score of a single card given its index. '''
+    return PRIME_SCORE if is_prime_index(card_index) else COMPOSITE_SCORE
 
 def place_card_index(card_to_place: int, player_number: int):
     ''' Tells on which index of the visible cards (in [0,3]) the player should place the card. '''
@@ -53,9 +56,6 @@ def opponent_composite_index(player: int):
     ''' returns the index of the visible cards (in [0,3]) where player finds the composite cards of his opponent. '''
     return 3 if player==1 else 1
 
-def card_score_by_index(card_index: int):
-    ''' returns the score of a single card given its index. '''
-    return PRIME_SCORE if is_prime_index(card_index) else COMPOSITE_SCORE
 
 def whose_card_is_this(index: int):
     ''' returns the number of the player ([1,2]) that 'owns' the cards placed at `index`.'''
@@ -84,12 +84,12 @@ def is_valid_operation(result: int, operand1: int, operand2: int):
     return False
 
 
-def set_initial_players_deck(seed_value):
+def set_initial_players_deck(seed):
     ''' returns deck_p1 and deck_p2 as numpy arrays '''
     deck = np.linspace(start=LOWEST_CARD, stop=HIGHEST_CARD, num=NUMBER_OF_CARDS, dtype='int')
 
-    if seed_value != None:
-        random.seed(seed_value)
+    if seed != None:
+        random.seed(seed)
 
     random.shuffle(deck)
     cards_p1 = deck[:NUM_CARDS_PER_PLAYER]
@@ -119,7 +119,13 @@ def print_results(results, policies, show_scores=False):
     print(myTable)
 
 def shift_element(array: np.ndarray, from_index: int, to_index: int):
-    ''' returns a copy of `array` with the item in `from_index` positioned in `to_index` and the rest shifted to the right. '''
+    ''' returns a copy of `array` with the following modifications:
+    
+    - the items in the range [`to_index`:`from_index-1`] are shifted to the right by one place
+    - the item in `from_index` is placed in the "hole" created by the shift
+    
+    Example: shift_element([1,2,3,4,5], 3, 1) returns [1,4,2,3,5]
+    '''
     temp = array[from_index]
     return np.insert(np.delete(array, from_index), to_index, temp)
 
@@ -128,7 +134,7 @@ def remove(arr: np.ndarray, value):
     return np.delete(arr, np.where(arr==value))
 
 def show_visible_cards(arr):
-    ''' `arr` is an array of exactly 4 `Stack`s or exactly 4 `int`s. This functions teturns in a nice format, a string with the topmost element of each stack in `arr` or the value of the integer numbers. '''
+    ''' `arr` is an array of exactly 4 `Stack`s or exactly 4 `int`s. This functions returns in a nice format, a string with the topmost element of each stack in `arr` or the value of the integer numbers. '''
     assert(len(arr)==4)
     if all(isinstance(x, Stack) for x in arr):
         return '[' + " ".join("_" if x == 0 else str(x.safe_top_just_for_print()) for x in arr) + ']'
