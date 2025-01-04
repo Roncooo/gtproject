@@ -24,10 +24,19 @@ def play_n_games(policy1, policy2, n_games, play_one_game_function, print_game_f
     tot_score2 = 0
     abs_score_diff = 0
 
-    # This context manager automatically handles the joining of processes once the block of code is completed (so no need to explicitly wait for the processes to end)
-    with Pool(processes=max_n_processes) as pool:
-        results = pool.starmap(play_one_game_function, [(policy1, policy2, seed) for _ in range(n_games)])
-
+    parallelize = True
+    if policy1 in SIMPLE_POLICIES and policy2 in SIMPLE_POLICIES:
+        parallelize = False
+    
+    if parallelize:
+        # This context manager automatically handles the joining of processes once the block of code is completed (so no need to explicitly wait for the processes to end)
+        with Pool(processes=max_n_processes) as pool:
+            results = pool.starmap(play_one_game_function, [(policy1, policy2, seed) for _ in range(n_games)])
+    else:
+        results = []
+        for _ in range(n_games):
+            results.append(play_one_game_function(policy1, policy2, seed))
+    
     for score1, score2, deck_p1, deck_p2 in results:
         if score1 > score2:
             win_count_p1 += 1
