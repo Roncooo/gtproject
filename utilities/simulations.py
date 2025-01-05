@@ -12,8 +12,11 @@ def sort_deck_according_to_policy(policy, player_deck):
         case 'greedy_desc': return np.sort(player_deck)[::-1]
         case _: return player_deck
 
-def play_n_games(policy1, policy2, n_games, play_one_game_function, print_game_function, seed=None, log_game=False, max_n_processes=1):
+def play_n_games(policy1, policy2, n_games, play_one_game_function, print_game_function, seed=None, log_game=False):
     '''Plays `n_games` times a match with `policy_1` vs `policy_2`. If `n_games` is greater than 1 then `seed` is ignored (otherwise the games would be identical). This function parallelizes the execution of the different matches, creating one process for each game (up to `max_n_processes`).'''
+    
+    assert policy1 in ALL_POLICIES
+    assert policy2 in ALL_POLICIES
     
     if n_games>1:
         seed = None
@@ -24,18 +27,9 @@ def play_n_games(policy1, policy2, n_games, play_one_game_function, print_game_f
     tot_score2 = 0
     abs_score_diff = 0
 
-    parallelize = True
-    if policy1 in SIMPLE_POLICIES and policy2 in SIMPLE_POLICIES:
-        parallelize = False
-    
-    if parallelize:
-        # This context manager automatically handles the joining of processes once the block of code is completed (so no need to explicitly wait for the processes to end)
-        with Pool(processes=max_n_processes) as pool:
-            results = pool.starmap(play_one_game_function, [(policy1, policy2, seed) for _ in range(n_games)])
-    else:
-        results = []
-        for _ in range(n_games):
-            results.append(play_one_game_function(policy1, policy2, seed))
+    results = []
+    for _ in range(n_games):
+        results.append(play_one_game_function(policy1, policy2, seed))
     
     for score1, score2, deck_p1, deck_p2 in results:
         if score1 > score2:
@@ -58,12 +52,46 @@ def play_n_games(policy1, policy2, n_games, play_one_game_function, print_game_f
     avg_abs_score_diff = abs_score_diff / n_games
     return winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff
 
+
+def distribute_total(tot, n):
+    '''Returns an array of n almost equal elements in such a way that their sum is equal to `tot`.
+    
+    Example: distribute_total(100, 3) returns [34,33,33]'''
+    base_value = tot // n
+    remainder = tot % n
+    array = [base_value] * n
+    for i in range(remainder):
+        array[i] += 1
+    return array
+
+def weighted_average(list_of_tuples, weights):
+    assert len(list_of_tuples)==len(weights)
+    weight_sum = sum(weights)
+    weighted_list = [0]*len(list_of_tuples[0])
+    for i in range(len(list_of_tuples)):
+        # element wise multiplication
+        weighted_list += np.array(list_of_tuples[i])*(weights[i]/weight_sum)
+    return weighted_list
+
 def play_n_games_for_each_policy_combination(play_one_game_function, print_game_function, n_games=1000, policies=SIMPLE_POLICIES, seed=None, log_game=False, max_n_processes=1):
+    '''Does what the name says. Uses process parallelization to run simultaneously `max_n_processes` batches of games of the same combination of policies. Set `max_n_policies=0` if you don't want to parallelize. There is some relevant overhead for smaller values of `n_games`.'''
+    
+    parallelize = False if max_n_processes==0 else True
+    
     results = []
     for p1 in policies:
         row = []
         for p2 in policies:
-            winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff = play_n_games(p1, p2, n_games,play_one_game_function, print_game_function, seed, log_game, max_n_processes)
+            if parallelize:
+                # idea: each process does k=n_games/n_process games
+                k_arr = distribute_total(n_games, max_n_processes)
+                with Pool(processes=max_n_processes) as pool:
+                    # list of tuples, i-th tuple contains the results (winrate_1, ...) of k_arr[i] games
+                    partial_results = pool.starmap(play_n_games, [(p1, p2, k, play_one_game_function, print_game_function, seed, log_game) for k in k_arr])
+                winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff = weighted_average(partial_results, k_arr) 
+            else:
+                winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff = play_n_games(p1, p2, n_games,play_one_game_function, print_game_function, seed, log_game)
+            # append the cell of the table to the current row
             row += [[winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff]]
         results += [row]
     return results
