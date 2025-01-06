@@ -1,7 +1,7 @@
 from utilities.policies import *
 import numpy as np
 from multiprocessing import Pool
-
+import time
 
 def sort_deck_according_to_policy(policy, player_deck):
     ''' Returns the array of cards sorted according to a policy '''
@@ -62,6 +62,9 @@ def distribute_total(tot, n):
     array = [base_value] * n
     for i in range(remainder):
         array[i] += 1
+    # remove final zeros if any (may happen if n<tot)
+    while array[-1]==0:
+        array.pop()
     return array
 
 def weighted_average(list_of_tuples, weights):
@@ -82,6 +85,7 @@ def play_n_games_for_each_policy_combination(play_one_game_function, print_game_
     for p1 in policies:
         row = []
         for p2 in policies:
+            start = time.time()
             if parallelize:
                 # idea: each process does k=n_games/n_process games
                 k_arr = distribute_total(n_games, max_n_processes)
@@ -93,5 +97,7 @@ def play_n_games_for_each_policy_combination(play_one_game_function, print_game_
                 winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff = play_n_games(p1, p2, n_games,play_one_game_function, print_game_function, seed, log_game)
             # append the cell of the table to the current row
             row += [[winrate_p1, avg_score_1, tierate, winrate_p2, avg_score_2, avg_abs_score_diff]]
+            end = time.time()
+            print(f"done {p1} vs {p2} in {end-start:.3f} s")
         results += [row]
     return results
