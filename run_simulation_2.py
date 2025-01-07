@@ -5,8 +5,8 @@ import time
 import os
 
 if __name__ == "__main__":
-    n_games = 10 # remember to disable all the prints in play_one_game to speed up the process (a lot)
-    policies = ['asc', 'minimax_4']
+    n_games = 16 # remember to disable all the prints in play_one_game to speed up the process (a lot)
+    policies = ['greedy_asc','greedy_desc','greedy_rand', 'minimax_4', 'minimax_5']
     
     start = time.time()
     results = play_n_games_for_each_policy_combination(n_games = n_games, policies=policies, play_one_game_function = play_one_game_2, print_game_function = print_game_2, seed=None, log_game=False,max_n_processes=os.cpu_count())
