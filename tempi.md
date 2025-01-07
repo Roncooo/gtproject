@@ -25,6 +25,12 @@ in funzione delle depths
   - Done 5 levels in 0.86 s
   - Done 9 levels in 1.17 s
 
+WITH UPDATED DEEPCOPY
+- run_alphabeta_2.py with [6,6,12]:
+  - Done 6 levels in 46.17 s
+  - Done 6 levels in 5.80 s
+  - Done 12 levels in 125.14 s
+
 ## Tempi simulazioni
 
 Tempi per fare una simulazione di minimax_n vs minimax_n (per le altre policy è quasi istantaneo, si possono runnare anche migliaia di simulazioni, vedi results.txt):

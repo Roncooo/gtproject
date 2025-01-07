@@ -1,7 +1,5 @@
-import copy
-from  utilities.Node import Node
-from  utilities.utils import PRIME_SCORE, COMPOSITE_SCORE, is_prime, is_valid_operation, remove
-
+from utilities.Node import Node
+from utilities.utils import PRIME_SCORE, COMPOSITE_SCORE, is_prime, is_valid_operation, remove
 
 def delta(visible_cards):
     score_p1 = visible_cards[0].size()*PRIME_SCORE + visible_cards[1].size()*COMPOSITE_SCORE
@@ -20,6 +18,9 @@ def place_card(visible_cards, new_card, player):
         else:
             visible_cards[3].push(new_card)
 
+def custom_deepcopy(arr_of_stacks):
+    return [arr_of_stacks[i].deepcopy() for i in range(4)]
+    
 def generate_tree_2(cards_p1, cards_p2, table_cards, depth, current_player):
     root = Node(cards_p1, cards_p2, visible_cards=table_cards, current_player=current_player)
     def expand(node: Node, depth):
@@ -37,7 +38,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth, current_player):
                 if opponent_prime and opponent_composite and (
                     is_valid_operation(c, opponent_prime, opponent_composite)
                 ): 
-                    new_visible_cards = copy.deepcopy(node.visible_cards)
+                    new_visible_cards = custom_deepcopy(node.visible_cards)
                     new_visible_cards[0].push(new_visible_cards[2].pop())
                     new_visible_cards[1].push(new_visible_cards[3].pop())
                     place_card(new_visible_cards, c, node.current_player)
@@ -58,7 +59,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth, current_player):
                     (my_composite and is_valid_operation(c, opponent_prime, my_composite)) or
                     (my_prime and is_valid_operation(c, opponent_prime, my_prime))
                 ):
-                    new_visible_cards = copy.deepcopy(node.visible_cards)
+                    new_visible_cards = custom_deepcopy(node.visible_cards)
                     new_visible_cards[0].push(new_visible_cards[2].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
@@ -78,7 +79,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth, current_player):
                     (my_prime and is_valid_operation(c, opponent_composite, my_prime)) or 
                     (my_composite and is_valid_operation(c, opponent_composite, my_composite))
                 ): 
-                    new_visible_cards = copy.deepcopy(node.visible_cards)
+                    new_visible_cards = custom_deepcopy(node.visible_cards)
                     new_visible_cards[1].push(new_visible_cards[3].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
@@ -95,7 +96,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth, current_player):
                 
                 # I cannot steal cards
                 else:
-                    new_visible_cards = copy.deepcopy(node.visible_cards)
+                    new_visible_cards = custom_deepcopy(node.visible_cards)
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
                     cards_player1_copy = remove(node.cards_player1, c)
@@ -122,7 +123,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth, current_player):
                 if opponent_composite and opponent_prime and (
                     is_valid_operation(c, opponent_prime, opponent_composite)
                 ): 
-                    new_visible_cards = copy.deepcopy(node.visible_cards)
+                    new_visible_cards = custom_deepcopy(node.visible_cards)
                     new_visible_cards[2].push(new_visible_cards[0].pop())
                     new_visible_cards[3].push(new_visible_cards[1].pop())
                     place_card(new_visible_cards, c, node.current_player)
@@ -143,7 +144,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth, current_player):
                     (my_composite and is_valid_operation(c, opponent_prime, my_composite)) or
                     (my_prime and is_valid_operation(c, opponent_prime, my_prime))
                 ):
-                    new_visible_cards = copy.deepcopy(node.visible_cards)
+                    new_visible_cards = custom_deepcopy(node.visible_cards)
                     new_visible_cards[2].push(new_visible_cards[0].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
@@ -163,7 +164,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth, current_player):
                     (my_prime and is_valid_operation(c, opponent_composite, my_prime)) or 
                     (my_composite and is_valid_operation(c, opponent_composite, my_composite))
                 ): 
-                    new_visible_cards = copy.deepcopy(node.visible_cards)
+                    new_visible_cards = custom_deepcopy(node.visible_cards)
                     new_visible_cards[3].push(new_visible_cards[1].pop())
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
@@ -180,7 +181,7 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth, current_player):
                 
                 # I cannot steal cards
                 else:
-                    new_visible_cards = copy.deepcopy(node.visible_cards)
+                    new_visible_cards = custom_deepcopy(node.visible_cards)
                     place_card(new_visible_cards, c, node.current_player)
                     new_delta = delta(new_visible_cards)
                     cards_player2_copy = remove(node.cards_player2, c)

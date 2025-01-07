@@ -1,8 +1,8 @@
 from Primi_composti_2.tree_primi_composti_2 import generate_tree_2
 from utilities.solve_tree import solve
 from utilities.utils import set_initial_players_deck, show_visible_cards
-from utilities.Stack import *
-from utilities.Node import *
+from utilities.Stack import Stack
+from utilities.Node import Node
 from prettytable import PrettyTable 
 
 if __name__ == "__main__":
@@ -11,7 +11,7 @@ if __name__ == "__main__":
     cards_p1, cards_p2 = set_initial_players_deck(seed)
 
     tree_root = Node(cards_p1, cards_p2, visible_cards=[Stack(), Stack(), Stack(), Stack()], current_player=1)  # initial state tree
-    depths = [3] * 8 # partial depths for the resolution of the tree
+    depths = [6,6,12] # partial depths for the resolution of the tree
     all_paths = solve(tree_root, depths, generate_tree_function=generate_tree_2)
 
     # Print the path

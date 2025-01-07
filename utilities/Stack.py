@@ -28,3 +28,7 @@ class Stack:
         return len(self.stack)
     def __str__(self):
         return str(self.stack) if self.stack else "[]"
+    def deepcopy(self):
+        copy = Stack()
+        copy.stack = self.stack[:]
+        return copy
