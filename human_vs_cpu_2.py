@@ -1,4 +1,4 @@
-from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck, show_visible_cards, shift_element
+from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck,show_visible_cards, shift_element
 from utilities.policies import ALL_POLICIES
 from Primi_composti_2.play_primi_composti_2 import choose_card_by_policy_2, steal_and_place_cards, current_scores, best_score_2
 from utilities.simulations import sort_deck_according_to_policy
