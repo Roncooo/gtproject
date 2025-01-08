@@ -1,3 +1,4 @@
+Starting to play 16 of game 2 for each combination of ['greedy_asc', 'greedy_desc', 'greedy_rand', 'minimax_4', 'minimax_5'] with 16 parallel processes
 done greedy_asc vs greedy_asc in 0.627 s
 done greedy_asc vs greedy_desc in 0.560 s
 done greedy_asc vs greedy_rand in 0.569 s
