@@ -6,7 +6,7 @@ import time
 import os
 
 if __name__ == "__main__":
-    n_games = 16 # remember to disable all the prints in play_one_game to speed up the process (a lot)
+    n_games = 1000 # remember to disable all the prints in play_one_game to speed up the process (a lot)
     policies = ['greedy_asc','greedy_desc','greedy_rand','minimax_4', 'minimax_5']
     max_n_processes = os.cpu_count()
     print(f"Starting to play {n_games} of game 2 for each combination of {policies} with {max_n_processes} parallel processes")
