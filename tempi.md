@@ -1,9 +1,9 @@
-## Tempi per la prima mossa poi vanno a calare
+## Tempi per la prima mossa (CPU plays first) poi vanno a calare
 
-| Versione gioco | minimax_4   | minimax_5  | minimax_6   |
-| -------------- | ----------- | ---------- | ----------- |
-| 1              | 1 s (medio) | 3 s (diff) | 30 s (diff) |
-| 2              | 1 s         | 15 s       | 93 s        |
+| Versione gioco | minimax_4    | minimax_5   | minimax_6   |
+| -------------- | ------------ | ----------- | ----------- |
+| 1              | <1 s (medio) | <3 s (diff) | 26 s (diff) |
+| 2              | <1 s         | <3 s        | 39 s        |
 
 ## Tempi alpha beta
 
@@ -26,6 +26,7 @@ in funzione delle depths
   - Done 9 levels in 1.17 s
 
 WITH UPDATED DEEPCOPY
+
 - run_alphabeta_2.py with [6,6,12]:
   - Done 6 levels in 46.17 s
   - Done 6 levels in 5.80 s
@@ -38,4 +39,4 @@ Tempi per fare una simulazione di minimax_n vs minimax_n (per le altre policy è
 | Versione gioco | maximin_4 | maximin_5 | maximin_6 |
 | -------------- | --------- | --------- | --------- |
 | 1              | 2 s       | 15 s      | 145 s     |
-| 2              | 9 s       | 64 s      | 640 s     |
+| 2              | 2 s       | 22 s      | 177 s     |
