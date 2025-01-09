@@ -1,0 +1,13 @@
+Starting to play 80 of game 2 for each combination of ['minimax_5', 'minimax_6'] with 16 parallel processes
+done minimax_5 vs minimax_5 in 176.864 s
+done minimax_5 vs minimax_6 in 1826.396 s
+done minimax_6 vs minimax_5 in 3958.439 s
+done minimax_6 vs minimax_6 in 5864.434 s
+For each cell, win rate p1 (average score p1) | tie rate | win rate p2 (average score p2) | abs average score difference
++-----------+--------------------------------------------------+--------------------------------------------------+
+|   P1\P2   |                    minimax_5                     |                    minimax_6                     |
++-----------+--------------------------------------------------+--------------------------------------------------+
+| minimax_5 | 41.25% (15.08) | 00.00% | 58.75% (17.92) | 05.88 | 16.25% (13.42) | 00.00% | 83.75% (19.57) | 07.07 |
+| minimax_6 | 40.00% (15.60) | 00.00% | 60.00% (17.40) | 04.30 | 25.00% (14.59) | 00.00% | 75.00% (18.41) | 04.97 |
++-----------+--------------------------------------------------+--------------------------------------------------+
+80 games for each combination, total time: 11826.14 seconds. Ran over 16 cpu cores.
