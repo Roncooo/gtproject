@@ -63,3 +63,36 @@ def solve(current_node: Node, depths: List[int], generate_tree_function):
         print(f"Done {depth} levels in {end - start:.2f} s")
 
     return all_paths
+
+
+def solve2(current_node: Node, depths: List[int], generate_tree_function):
+
+    all_paths = []
+    all_leaves = []  # List to store the leaf nodes for each depth
+    current_player = 1  # According to the rules, player 1 starts
+
+    for i, depth in enumerate(depths):
+        start = time.time()
+
+        # If the previous depth is odd, then switch to the other starting player
+        if i > 0 and depth % 2 != 0:
+            current_player = 2 if current_player == 1 else 1
+
+        # Generate the game tree for the current depth
+        root = generate_tree_function(current_node.cards_player1, current_node.cards_player2,
+                                      current_node.visible_cards, depth, current_player)
+        score, leaf_minimax = minimax(root, depth, True)
+
+
+        # Update the current_node to the leaf node found
+        current_node = leaf_minimax
+        path = Node.get_path(leaf_minimax)
+        all_paths.append(path)
+
+        # Add the corresponding leaf to the list
+        all_leaves.append(leaf_minimax)
+
+        end = time.time()
+        print(f"Done {depth} levels in {end - start:.2f} s")
+
+    return all_paths, all_leaves
