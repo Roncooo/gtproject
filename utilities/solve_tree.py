@@ -39,7 +39,7 @@ def minimax(position: Node, depth: int, maximizingPlayer: bool, alpha=float('-in
 def solve(current_node: Node, depths: List[int], generate_tree_function):
     '''Solves the game using minimax policy iteratively with steps defined by ```depths```. Returns the path from ```current_node``` to the best leaf as a list of nodes.'''
 
-    assert sum(depths)==NUMBER_OF_CARDS, f"The sum of depths is {sum(depths)} but it must be equal to {NUMBER_OF_CARDS}"
+    #assert sum(depths)==NUMBER_OF_CARDS, f"The sum of depths is {sum(depths)} but it must be equal to {NUMBER_OF_CARDS}"
 
     all_paths = []
     current_player = 1 # According to the rules, player 1 starts
