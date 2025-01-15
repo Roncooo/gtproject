@@ -1,4 +1,4 @@
-from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck, place_card_index, shift_element, show_visible_cards
+from utilities.utils import NUM_CARDS_PER_PLAYER, NUMBER_OF_CARDS, set_initial_players_deck, place_card_index, shift_element, show_visible_cards
 from utilities.policies import ALL_POLICIES
 from Primi_composti_1.score import best_score_1
 from Primi_composti_1.play_primi_composti_1 import choose_card_by_policy_1
@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
     seed = 31
     # here cards_p1 and cards_p2 are ndarrays used as in play_primi_composti_1
-    cards_p1, cards_p2 = set_initial_players_deck(seed=None)
+    cards_p1, cards_p2 = set_initial_players_deck(number_of_cards=NUMBER_OF_CARDS, seed=None)
     visible_cards = np.zeros(4, dtype='int')
     human_score = cpu_score = 0
 

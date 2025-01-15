@@ -1,5 +1,4 @@
 from utilities.Node import Node
-from utilities.utils import NUMBER_OF_CARDS
 from typing import List
 import time
 
@@ -36,12 +35,23 @@ def minimax(position: Node, depth: int, maximizingPlayer: bool, alpha=float('-in
         return minEval, bestLeaf
 
 
-def solve(current_node: Node, depths: List[int], generate_tree_function):
-    '''Solves the game using minimax policy iteratively with steps defined by ```depths```. Returns the path from ```current_node``` to the best leaf as a list of nodes.'''
+def solve(current_node: Node, generate_tree_function, depths: List[int]=None):
+    '''
+    Solves the game using minimax policy starting from ```current_node```. 
+    
+    When the tree is very big (and in particular very deep), one could want to subdivide the solution of the tree in some steps. You can do this by specifying the size of each step in the list ```depths```. In that case the algorithm will solve the subtree of depth ```depths[0]```, take the leaf returned by the minimax and use it as new root and reiterate until the depths are ended. As discussed in the paper, this may have little sense but we still allow it, also for debugging purposes. In particular, just as a practical suggestion, if the number of cards is bigger than 12, the execution of the minimax algorithm on the full tree without intermediate steps becomes very long. 
+    
+    Returns the path from ```current_node``` to the best leaf as a list of nodes.'''
 
-    #assert sum(depths)==NUMBER_OF_CARDS, f"The sum of depths is {sum(depths)} but it must be equal to {NUMBER_OF_CARDS}"
+    assert len(current_node.cards_player1)==len(current_node.cards_player2), f"The two players should have the same amount of cards but player 1 has {len(current_node.cards_player1)} cards and player 2 has {len(current_node.cards_player2)}"
+    
+    actual_number_of_cards = len(current_node.cards_player1) + len(current_node.cards_player2)
+    if depths==None:
+        depths = [actual_number_of_cards]
+    
+    assert sum(depths)==actual_number_of_cards, f"The sum of depths is {sum(depths)} but it must be equal to {actual_number_of_cards}"
 
-    all_paths = []
+    full_path = []
     current_player = 1 # According to the rules, player 1 starts
 
     for i, depth in enumerate(depths):
@@ -57,42 +67,11 @@ def solve(current_node: Node, depths: List[int], generate_tree_function):
 
         current_node = leaf_minimax
         path = Node.get_path(leaf_minimax)
-        all_paths.append(path)
+        full_path.append(path)
 
         end = time.time()
         print(f"Done {depth} levels in {end - start:.2f} s")
 
-    return all_paths
+    return full_path
 
 
-def solve2(current_node: Node, depths: List[int], generate_tree_function):
-
-    all_paths = []
-    all_leaves = []  # List to store the leaf nodes for each depth
-    current_player = 1  # According to the rules, player 1 starts
-
-    for i, depth in enumerate(depths):
-        start = time.time()
-
-        # If the previous depth is odd, then switch to the other starting player
-        if i > 0 and depth % 2 != 0:
-            current_player = 2 if current_player == 1 else 1
-
-        # Generate the game tree for the current depth
-        root = generate_tree_function(current_node.cards_player1, current_node.cards_player2,
-                                      current_node.visible_cards, depth, current_player)
-        score, leaf_minimax = minimax(root, depth, True)
-
-
-        # Update the current_node to the leaf node found
-        current_node = leaf_minimax
-        path = Node.get_path(leaf_minimax)
-        all_paths.append(path)
-
-        # Add the corresponding leaf to the list
-        all_leaves.append(leaf_minimax)
-
-        end = time.time()
-        print(f"Done {depth} levels in {end - start:.2f} s")
-
-    return all_paths, all_leaves

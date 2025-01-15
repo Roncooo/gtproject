@@ -1,4 +1,4 @@
-from utilities.utils import PRIME_SCORE, NUM_CARDS_PER_PLAYER, shift_element, set_initial_players_deck, place_card_index
+from utilities.utils import PRIME_SCORE, NUM_CARDS_PER_PLAYER, NUMBER_OF_CARDS, shift_element, set_initial_players_deck, place_card_index
 from utilities.policies import PREDETERMINED_POLICIES, MINIMAX_POLICIES
 from utilities.simulations import sort_deck_according_to_policy
 from Primi_composti_1.tree_primi_composti_1 import generate_tree_1
@@ -55,7 +55,7 @@ def choose_card_by_policy_1(my_deck, opponent_deck, policy, my_starting_index, o
 
 def play_one_game_1(policy1, policy2, seed=None):
     '''Returns the score of player 1, score of player 2, deck of player 1 and deck of player 2. The decks are returned for the logging and printing of the game since they are sorted from the first card played to the last.'''
-    deck_p1, deck_p2 = set_initial_players_deck(seed)
+    deck_p1, deck_p2 = set_initial_players_deck(number_of_cards=NUMBER_OF_CARDS, seed=seed)
 
     # For predetermined policies, this sorting is all choose_card needs.
     # For dynamic policies, the sorting helps with the time complexity.

@@ -1,4 +1,4 @@
-from utilities.utils import NUM_CARDS_PER_PLAYER, set_initial_players_deck,show_visible_cards, shift_element
+from utilities.utils import NUM_CARDS_PER_PLAYER, NUMBER_OF_CARDS, set_initial_players_deck,show_visible_cards, shift_element
 from utilities.policies import ALL_POLICIES
 from Primi_composti_2.play_primi_composti_2 import choose_card_by_policy_2, steal_and_place_cards, current_scores, best_score_2
 from utilities.simulations import sort_deck_according_to_policy
@@ -76,9 +76,8 @@ def turn(player_type, current_player_deck, visible_cards, player_starting_index,
 
 if __name__ == '__main__':
     
-    seed = 31
     # here cards_p1 and cards_p2 are ndarrays used as in play_primi_composti_1
-    cards_p1, cards_p2 = set_initial_players_deck(seed)
+    cards_p1, cards_p2 = set_initial_players_deck(number_of_cards=NUMBER_OF_CARDS, seed=None)
     visible_cards = [Stack(), Stack(), Stack(), Stack()]
     human_score = cpu_score = 0
     

@@ -2,6 +2,8 @@ import numpy as np
 import random
 from prettytable import PrettyTable
 from utilities.Stack import Stack
+from utilities.Node import Node
+from typing import List
 
 # Useful to save some computation: this gives the answer in O(1)
 IS_PRIME = (
@@ -18,7 +20,9 @@ PRIME_SCORE = 2
 HIGHEST_CARD = 25
 LOWEST_CARD = 2
 NUMBER_OF_CARDS = 24
+''' Number of cards in the full game '''
 NUM_CARDS_PER_PLAYER = int(NUMBER_OF_CARDS/2)
+''' Number of cards per player in the full game '''
 
 def is_prime(number: int):
     ''' returns `True` if `number` is prime, `False` otherwise. The implementation allows O(1) answer for all the positive integers in [2,25] and raises error for the other numbers. '''
@@ -84,16 +88,22 @@ def is_valid_operation(result: int, operand1: int, operand2: int):
     return False
 
 
-def set_initial_players_deck(seed):
+def set_initial_players_deck(number_of_cards = NUMBER_OF_CARDS, seed = None):
     ''' returns deck_p1 and deck_p2 as numpy arrays '''
-    deck = np.linspace(start=LOWEST_CARD, stop=HIGHEST_CARD, num=NUMBER_OF_CARDS, dtype='int')
+    
+    assert number_of_cards%2==0, f"The number of cards should be an even number, {number_of_cards} isn't"
+    
+    deck = np.arange(LOWEST_CARD, LOWEST_CARD + number_of_cards, step=1, dtype='int')
+
+    number_of_players = 2
+    num_cards_per_player = int(number_of_cards/number_of_players)
 
     if seed != None:
         random.seed(seed)
 
     random.shuffle(deck)
-    cards_p1 = deck[:NUM_CARDS_PER_PLAYER]
-    cards_p2 = deck[NUM_CARDS_PER_PLAYER:]
+    cards_p1 = deck[:num_cards_per_player]
+    cards_p2 = deck[num_cards_per_player:]
 
     # player1 is the first to play: according to the rules, he must have 2 in his deck
     # if this is not the case i switch the decks
@@ -140,3 +150,16 @@ def show_visible_cards(arr):
         return '[' + " ".join("_" if x == 0 else str(x.safe_top_just_for_print()) for x in arr) + ']'
     elif all(isinstance(x, int) or isinstance(x, np.int64) or isinstance(x, np.int32) for x in arr):
         return '[' + " ".join("_" if x == 0 else str(x) for x in arr) + ']'
+
+def print_path(full_path: List[Node]):
+    table = PrettyTable()
+    table.field_names = ["Player", "Played card", "Gameboard", "Delta", "Deck P1", "Deck P2"]
+    table.border = False
+    # Set all columns to left-align
+    for column in table.field_names:
+        table.align[column] = "l"
+    for i, path in enumerate(full_path):
+        table.add_row([""]*len(table.field_names))
+        for node in path[1:]:
+            table.add_row([node.parent.current_player, node.card_just_played, show_visible_cards(node.visible_cards), node.delta_score, node.cards_player1, node.cards_player2])
+    print(table)

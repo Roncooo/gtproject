@@ -1,31 +1,7 @@
 # Primi Composti
 
-## Questioni organizzative
-
-- Latex in locale o overleaf?
-- Questo documento su google docs?
-- Dobbiamo chiedere permessi o robe a Murrone per parlare del suo gioco?
-- Fissare deadlines
-- Capire cosa c'è da scrivere e quantificare (vedi sotto)
-- Come condividiamo il codice al prof?
-
-## Robe abbastanza easy da mettere nel paper
-
-- descrizione dei 2 giochi (e come abbiamo deciso di interpretare le cose dubbie)
-- descrizione maximin
-- descrizione alpha beta pruning e motivazione
-- l'albero è ancora troppo grosso quindi facciamo su più livelli
-- descrizione del codice (? o forse basta commentarlo **bene**)
-
-## Robe già fatte
-
-- smadonne (tante)
-
 ## Robe da fare/discutere
 
-- organizzare simulazioni
-  - runnare simulazioni a manetta per avere più dati da mettere nel paper
-  - ipoteticamente anche provare a parallelizzare e/o buttare su codelab
 - discutere il vantaggio di essere giocatore 1 o 2
   - e di conseguenza se sarebbe il caso di aggiustare i punteggi (tipo 1 per composite e 3 per prime o simili)
 - discutere il vantaggio relativo a quanti primi ti capitano

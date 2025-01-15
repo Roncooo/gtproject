@@ -1,5 +1,5 @@
 from utilities.Stack import Stack
-from utilities.utils import is_valid_operation, card_score_by_index, whose_card_is_this, card_score_by_value, opponent_composite_index, opponent_prime_index, my_composite_index, my_prime_index, place_card_index, set_initial_players_deck, shift_element, NUM_CARDS_PER_PLAYER, show_visible_cards
+from utilities.utils import is_valid_operation, card_score_by_index, whose_card_is_this, card_score_by_value, opponent_composite_index, opponent_prime_index, my_composite_index, my_prime_index, place_card_index, set_initial_players_deck, shift_element, NUM_CARDS_PER_PLAYER, NUMBER_OF_CARDS, show_visible_cards
 from utilities.policies import PREDETERMINED_POLICIES, MINIMAX_POLICIES
 from utilities.simulations import sort_deck_according_to_policy
 from utilities.solve_tree import minimax
@@ -141,7 +141,7 @@ def choose_card_by_policy_2(my_deck, opponent_deck, policy, my_starting_index, o
 def play_one_game_2(policy1, policy2, seed=None):
     '''Returns the score of player 1, score of player 2, deck of player 1 and deck of player 2. The decks are returned for the logging and printing of the game since they are sorted from the first card played to the last.'''
 
-    deck_p1, deck_p2 = set_initial_players_deck(seed)
+    deck_p1, deck_p2 = set_initial_players_deck(number_of_cards=NUMBER_OF_CARDS, seed=seed)
     
     # For predetermined policies, this sorting is all choose_card needs.
     # For dynamic policies, the sorting helps with the time complexity.

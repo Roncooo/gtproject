@@ -1,4 +1,4 @@
-from utilities.policies import *
+from utilities.policies import ALL_POLICIES, SIMPLE_POLICIES
 import numpy as np
 from multiprocessing import Pool
 import time

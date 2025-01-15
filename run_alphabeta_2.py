@@ -1,30 +1,18 @@
 from Primi_composti_2.tree_primi_composti_2 import generate_tree_2
 from utilities.solve_tree import solve
-from utilities.utils import set_initial_players_deck, show_visible_cards
+from utilities.utils import set_initial_players_deck, print_path
 from utilities.Stack import Stack
 from utilities.Node import Node
-from prettytable import PrettyTable 
 
 if __name__ == "__main__":
 
-    seed = 31
-    cards_p1, cards_p2 = set_initial_players_deck(seed)
+    cards_p1, cards_p2 = set_initial_players_deck(number_of_cards=12, seed=None)
 
-    tree_root = Node(cards_p1, cards_p2, visible_cards=[Stack(), Stack(), Stack(), Stack()], current_player=1)  # initial state tree
-    depths = [6,6,12] # partial depths for the resolution of the tree
-    all_paths = solve(tree_root, depths, generate_tree_function=generate_tree_2)
+    tree_root = Node(cards_p1, cards_p2, visible_cards=[Stack(), Stack(), Stack(), Stack()], current_player=1)
 
-    # Print the path
-    table = PrettyTable()
-    table.field_names = ["Player", "Played card", "Gameboard", "Delta", "Deck P1", "Deck P2"]
-    table.border = False
-    # Set all columns to left-align
-    for column in table.field_names:
-        table.align[column] = "l"
-    for i, path in enumerate(all_paths):
-        table.add_row([""]*len(table.field_names))
-        for node in path[1:]:
-            table.add_row([node.parent.current_player, node.card_just_played, show_visible_cards(node.visible_cards), node.delta_score, node.cards_player1, node.cards_player2])
-    print(table)
+    print(f"Solving a match of the version 2 of the game with minimax algorithm and alpha-beta pruning")
+    print(f"P1 has {cards_p1} and P2 has {cards_p2}")
     
+    full_path = solve(tree_root, generate_tree_function=generate_tree_2)
     
+    print_path(full_path)
