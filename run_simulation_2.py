@@ -1,14 +1,16 @@
 from Primi_composti_2.play_primi_composti_2 import *
-from utilities.policies import SIMPLE_POLICIES
+from utilities.policies import SIMPLE_POLICIES, DYNAMIC_POLICIES, MINIMAX_POLICIES, ALL_POLICIES
 from utilities.simulations import play_n_games_for_each_policy_combination
 from utilities.utils import print_results
 import time
 import os
 
 if __name__ == "__main__":
-    n_games = 80 # remember to disable all the prints in play_one_game to speed up the process (a lot)
-    policies = ['minimax_5', 'minimax_6']
-    max_n_processes = os.cpu_count()
+    
+    # You can significantly increase n_games when simulating simple policies, but when dealing with minimax algorithms, we recommend keeping the number low to ensure computing time remains reasonable
+    n_games = 1000 
+    policies = SIMPLE_POLICIES # you can also try something like ['minimax_5', 'minimax_6']
+    max_n_processes = os.cpu_count() # set to 0 if you don't want parallelization (useful for small values of n_games)
     print(f"Starting to play {n_games} of game 2 for each combination of {policies} with {max_n_processes} parallel processes")
     
     start = time.time()

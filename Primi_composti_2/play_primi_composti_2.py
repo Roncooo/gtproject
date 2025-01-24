@@ -200,6 +200,3 @@ def print_game_2(deck_p1, deck_p2):
         table.add_row([2, card_p2, show_visible_cards(visible_cards), score1, score2, deck_p1[i+1:], deck_p2[i+1:]])
 
     print(table)
-
-
-

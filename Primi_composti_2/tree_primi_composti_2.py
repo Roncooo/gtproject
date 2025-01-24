@@ -197,4 +197,3 @@ def generate_tree_2(cards_p1, cards_p2, table_cards, depth, current_player):
 
     expand(root, depth)
     return root
-

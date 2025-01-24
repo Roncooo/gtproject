@@ -77,7 +77,10 @@ def weighted_average(list_of_tuples, weights):
     return weighted_list
 
 def play_n_games_for_each_policy_combination(play_one_game_function, print_game_function, n_games=1000, policies=SIMPLE_POLICIES, seed=None, log_game=False, max_n_processes=1):
-    '''Does what the name says. Uses process parallelization to run simultaneously `max_n_processes` batches of games of the same combination of policies. Set `max_n_policies=0` if you don't want to parallelize. There is some relevant overhead for smaller values of `n_games`.'''
+    '''Does what the name says. Uses process parallelization to run simultaneously `max_n_processes` batches of games of the same combination of policies. Set `max_n_policies=0` if you don't want to parallelize. There is some relevant overhead for smaller values of `n_games`.
+    
+    If you intend to simulate a lot of games, please remember to set log_game=False to speed up the process (a lot)
+    '''
     
     parallelize = False if max_n_processes==0 else True
     

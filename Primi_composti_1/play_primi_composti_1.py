@@ -8,7 +8,8 @@ import numpy as np
 from prettytable import PrettyTable
 
 def choose_card_by_policy_1(my_deck, opponent_deck, policy, my_starting_index, opponent_starting_index, visible_cards, current_player):
-    ''' returns a copy of `my_deck` with, in position `my_starting_index`, the next card to be played. `my_starting_index` is the index from which I (current player) start looking for the next card, all those before are already played. `opponent_deck` and `opponent_starting_index` are needed only for `MINIMAX_POLICIES`.
+    ''' 
+    returns a copy of `my_deck` with, in position `my_starting_index`, the next card to be played. `my_starting_index` is the index from which I (current player) start looking for the next card, all those before are already played. `opponent_deck` and `opponent_starting_index` are needed only for `MINIMAX_POLICIES`.
     '''
     
     # policy is easy, the deck is already sorted accordingly

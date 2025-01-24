@@ -54,6 +54,3 @@ def generate_tree_1(cards_p1: np.ndarray, cards_p2: np.ndarray, visible_cards: l
 
     expand(root, depth)
     return root
-
-
-

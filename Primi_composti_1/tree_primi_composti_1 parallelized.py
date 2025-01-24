@@ -2,7 +2,6 @@ from utilities.Node import Node
 from utilities.utils import is_prime, remove
 from Primi_composti_1.score import best_score_1
 from multiprocessing import Pool
-import numpy as np
 import copy
 
 def place_card(visible_cards, new_card, player):
@@ -18,7 +17,6 @@ def place_card(visible_cards, new_card, player):
         else:
             new_gameboard[3] = new_card
     return new_gameboard
-
 
 def process_card_p1(c, node, depth):
     this_move_score = best_score_1(node.visible_cards, c)
@@ -71,13 +69,3 @@ def expand(node: Node, depth:int, parallelize: bool):
         else:
             for c in node.cards_player2:
                 process_card_p2(c, node, depth)
-                
-def generate_tree_1(cards_p1: np.ndarray, cards_p2: np.ndarray, visible_cards: list, depth: int, starting_player: int):
-    root = Node(cards_p1, cards_p2, visible_cards=visible_cards, current_player=starting_player)
-    '''The idea is to parallelize only the first call of generate tree. Not sure it works'''
-
-    expand(root, depth, parallelize=True)
-    return root
-
-
-

@@ -43,7 +43,7 @@ def ask_card(human_deck):
 
 
 def turn(player_type, current_player_deck, visible_cards, score, player_starting_index, opponent_starting_index = None , cpu_policy=None, opponent_deck=None, player_num=1):
-    """Handles a single turn for a player: cpu or human."""
+    ''' Handles a single turn for a player: cpu or human.'''
 
     if player_type == 'human':
         print(f"The visible cards are {show_visible_cards(visible_cards)}")
@@ -73,8 +73,6 @@ def turn(player_type, current_player_deck, visible_cards, score, player_starting
 
 if __name__ == '__main__':
 
-    seed = 31
-    # here cards_p1 and cards_p2 are ndarrays used as in play_primi_composti_1
     cards_p1, cards_p2 = set_initial_players_deck(number_of_cards=NUMBER_OF_CARDS, seed=None)
     visible_cards = np.zeros(4, dtype='int')
     human_score = cpu_score = 0
@@ -115,8 +113,3 @@ if __name__ == '__main__':
         print("That's a tie, try again")
     else:
         print("Not your day, but champions are forged in the fire of failure. Rise, train, and reclaim your glory!")
-
-
-
-
-

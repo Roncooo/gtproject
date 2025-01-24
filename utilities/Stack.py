@@ -1,8 +1,7 @@
 
 class Stack:
     '''
-    Apparently Pyhton does not have a built-in or library made stack with the top operation
-    and we need it, so here our own implementation of a Stack.
+    Apparently Pyhton does not have a built-in or library made stack with the top operation and we need it, so here our own implementation of a Stack.
     Note that this initializes as empty, and not with a single zero.
     '''
     def __init__(self):

@@ -76,7 +76,6 @@ def turn(player_type, current_player_deck, visible_cards, player_starting_index,
 
 if __name__ == '__main__':
     
-    # here cards_p1 and cards_p2 are ndarrays used as in play_primi_composti_1
     cards_p1, cards_p2 = set_initial_players_deck(number_of_cards=NUMBER_OF_CARDS, seed=None)
     visible_cards = [Stack(), Stack(), Stack(), Stack()]
     human_score = cpu_score = 0
