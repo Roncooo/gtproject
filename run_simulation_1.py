@@ -6,8 +6,8 @@ import time
 import os
 
 if __name__ == "__main__":
-    n_games = 180 # remember to disable all the prints in play_one_game to speed up the process (a lot)
-    policies = ['minimax_5', 'minimax_6']
+    n_games = 10 # remember to disable all the prints in play_one_game to speed up the process (a lot)
+    policies = SIMPLE_POLICIES
     max_n_processes = os.cpu_count() # set to 0 if you don't want parallelization (useful for small values of n_games)
     print(f"Starting to play {n_games} of game 1 for each combination of {policies} with {max_n_processes} parallel processes")
     

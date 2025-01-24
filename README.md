@@ -24,4 +24,4 @@ The code is written in python. To run it, make sure to have all the dependencies
 We provide 6 different executable python files that you can run simply from you terminal:
 * `human_vs_cpu_1.py` and `human_vs_cpu_2.py` to play a match of the game 1 and 2 against the computer. These programs ask you if you want to play as player 1 or 2 and then which policy you want the computer to play with. You can find the specifications of the policies in `utilities/policies.py`.
 * `run_simulation_1.py` and `run_simulation_1.py` to run a number of matches with each combination of the policies specified.
-* `run_aplhabeta_1.py` and `run_aplhabeta_2.py` to run the resolution of a game using the alphabeta pruning algorithm, you can specify the size of the steps you want to use in such a way they sum to 24.
+* `run_aplhabeta_1.py` and `run_aplhabeta_2.py` to run the resolution of a game where each player has 6 cards using the alphabeta pruning algorithm.
