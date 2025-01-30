@@ -1,5 +1,4 @@
 # Primi Composti
-# Primi Composti
 
 ## Game description
 "Primi Composti" is a strategy card game that can be played by 2 to 6 people.
